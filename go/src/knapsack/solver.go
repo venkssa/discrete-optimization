@@ -1,6 +1,6 @@
 package knapsack
 
-func computeEstimate(knapsack Knapsack, selections ...bool) float64 {
+func computeEstimate(knapsack *Knapsack, selections []bool) float64 {
 	estimate := 0.0
 	capacityLeft := knapsack.Capacity
 

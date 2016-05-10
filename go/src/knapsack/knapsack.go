@@ -38,6 +38,36 @@ type Knapsack struct {
 	Items    Items
 }
 
+func (k *Knapsack) computeEstimate(selections []bool) float64 {
+	estimate := 0.0
+	capacityLeft := k.Capacity
+
+	for idx, selection := range selections {
+		if selection {
+			item := k.Items[idx]
+			estimate += float64(item.Value)
+			capacityLeft -= item.Weight
+		}
+	}
+
+	for idx, selection := range selections {
+		if selection {
+			continue
+		}
+
+		fmt.Println(selection)
+		item := k.Items[idx]
+		if capacityLeft >= item.Weight {
+			estimate += float64(item.Value)
+			capacityLeft -= item.Weight
+		} else {
+			estimate += item.ValuePerUnitWeight() * float64(capacityLeft)
+			break
+		}
+	}
+	return estimate
+}
+
 func NewKnapsack(reader io.ReadCloser) (Knapsack, error) {
 	defer reader.Close()
 

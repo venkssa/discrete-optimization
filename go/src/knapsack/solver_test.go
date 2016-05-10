@@ -1,6 +1,8 @@
 package knapsack
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestComputeEstimate(t *testing.T) {
 	tests := []struct {
@@ -21,34 +23,8 @@ func TestComputeEstimate(t *testing.T) {
 		},
 	}
 
-	knapsack := &Knapsack{
-		Capacity: 11,
-		Items: Items([]Item{
-			{
-				Idx:    1,
-				Value:  8,
-				Weight: 4,
-			},
-			{
-				Idx:    2,
-				Value:  10,
-				Weight: 5,
-			},
-			{
-				Idx:    0,
-				Value:  15,
-				Weight: 8,
-			},
-			{
-				Idx:    3,
-				Value:  4,
-				Weight: 3,
-			},
-		}),
-	}
-
 	for _, test := range tests {
-		estimate := computeEstimate(knapsack, test.selections)
+		estimate := computeEstimate(ks_4_0_Knapsack(), test.selections)
 
 		if estimate != test.expectedEstimate {
 			t.Errorf("Expected %f but was %f", test.expectedEstimate, estimate)
@@ -56,35 +32,22 @@ func TestComputeEstimate(t *testing.T) {
 	}
 }
 
-func BenchmarkComputeEstimate(b *testing.B) {
-	selections := []bool{false, false, false, true}
+func BenchmarkComputeEstimate_ks_4_0(b *testing.B) {
+	runBenchmarkComputeEstimate(b, ks_4_0_Knapsack())
+}
 
-	knapsack := &Knapsack{
-		Capacity: 11,
-		Items: Items([]Item{
-			{
-				Idx:    1,
-				Value:  8,
-				Weight: 4,
-			},
-			{
-				Idx:    2,
-				Value:  10,
-				Weight: 5,
-			},
-			{
-				Idx:    0,
-				Value:  15,
-				Weight: 8,
-			},
-			{
-				Idx:    3,
-				Value:  4,
-				Weight: 3,
-			},
-		}),
-	}
+func BenchmarkComputeEstimate_ks_19_0(b *testing.B) {
+	runBenchmarkComputeEstimate(b, ks_19_0_Knapsack())
+}
+
+func BenchmarkComputeEstimate_ks_50_0(b *testing.B) {
+	runBenchmarkComputeEstimate(b, ks_50_0_Knapsack())
+}
+
+func runBenchmarkComputeEstimate(b *testing.B, knapasack *Knapsack) {
+	selections := make([]bool, len(knapasack.Items))
+
 	for idx := 0; idx < b.N; idx++ {
-		computeEstimate(knapsack, selections)
+		computeEstimate(knapasack, selections)
 	}
 }

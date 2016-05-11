@@ -55,7 +55,6 @@ func (k *Knapsack) computeEstimate(selections []bool) float64 {
 			continue
 		}
 
-		fmt.Println(selection)
 		item := k.Items[idx]
 		if capacityLeft >= item.Weight {
 			estimate += float64(item.Value)

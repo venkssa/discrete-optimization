@@ -37,7 +37,7 @@ func ks_19_0_Knapsack() *Knapsack {
 }
 
 func ks_50_0_Knapsack() *Knapsack {
-return newKnapsackOrPanicOnFailure(`50 341045
+	return newKnapsackOrPanicOnFailure(`50 341045
 		1906 4912
 		41516 99732
 		23527 56554

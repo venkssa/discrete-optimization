@@ -4,15 +4,15 @@ import "testing"
 
 func TestNode_IsLeft(t *testing.T) {
 	tests := []struct {
-		node   node
+		node   Node
 		isLeft bool
 	}{
 		{
-			node:   node{idx: 0, selections: []selection{SELECTED}},
+			node:   Node{idx: 0, selections: []selection{SELECTED}},
 			isLeft: true,
 		},
 		{
-			node:   node{idx: 0, selections: []selection{SKIPPED}},
+			node:   Node{idx: 0, selections: []selection{SKIPPED}},
 			isLeft: false,
 		},
 	}
@@ -25,12 +25,22 @@ func TestNode_IsLeft(t *testing.T) {
 }
 
 func TestNode_NextNodes_OnALeft_ReturnsRightNodeAsTheFirstResult(t *testing.T) {
-	knapsack := newKnapsackOrPanicOnFailure(`2 5
-	5 5
-	2 5`)
+	knapsack := &Knapsack{
+		Capacity: 5,
+		Items: []Item{
+			{
+				Value:  5,
+				Weight: 5,
+			},
+			{
+				Value:  2,
+				Weight: 5,
+			},
+		},
+	}
 
 	selections := []selection{SELECTED, SKIPPED}
-	node := node{idx: 0, selections: selections[0:1], usedCapacity: 5, estimate: Estimate(knapsack, selections)}
+	node := Node{idx: 0, selections: selections[0:1], usedCapacity: 5, estimate: Estimate(knapsack, selections)}
 
 	nextNodes := node.NextNodes(knapsack)
 
@@ -47,12 +57,22 @@ func TestNode_NextNodes_OnALeft_ReturnsRightNodeAsTheFirstResult(t *testing.T) {
 }
 
 func TestNode_NextNodes_ReturnsOneLeftChildNode(t *testing.T) {
-	knapsack := newKnapsackOrPanicOnFailure(`2 7
-	5 2
-	2 5`)
+	knapsack := &Knapsack{
+		Capacity: 7,
+		Items: []Item{
+			{
+				Value: 5,
+				Weight: 2,
+			},
+			{
+				Value: 2,
+				 Weight: 5,
+			},
+		},
+	}
 
 	selections := []selection{SELECTED, SKIPPED}
-	node := node{idx: 0, selections: selections[0:1], usedCapacity: 2, estimate: Estimate(knapsack, selections)}
+	node := Node{idx: 0, selections: selections[0:1], usedCapacity: 2, estimate: Estimate(knapsack, selections)}
 
 	nextNodes := node.NextNodes(knapsack)
 
@@ -64,18 +84,28 @@ func TestNode_NextNodes_ReturnsOneLeftChildNode(t *testing.T) {
 		t.Errorf("Expected %#v to be a left node but was right.", nextNodes[1])
 	}
 
-	if nextNodes[1].idx != node.idx + 1 {
-		t.Errorf("Expected idx to be %d but was %d", node.idx + 1, nextNodes[1].idx)
+	if nextNodes[1].idx != node.idx+1 {
+		t.Errorf("Expected idx to be %d but was %d", node.idx+1, nextNodes[1].idx)
 	}
 }
 
 func TestNode_NextNodes_ReturnsOneRightChildNode(t *testing.T) {
-	knapsack := newKnapsackOrPanicOnFailure(`2 7
-	5 2
-	2 6`)
+	knapsack := &Knapsack{
+		Capacity: 7,
+		Items: []Item{
+			{
+				Value: 5,
+				Weight: 2,
+			},
+			{
+				Value: 2,
+				Weight: 6,
+			},
+		},
+	}
 
 	selections := []selection{SELECTED, SKIPPED}
-	node := node{idx: 0, selections: selections[0:1], usedCapacity: 2, estimate: Estimate(knapsack, selections)}
+	node := Node{idx: 0, selections: selections[0:1], usedCapacity: 2, estimate: Estimate(knapsack, selections)}
 
 	nextNodes := node.NextNodes(knapsack)
 
@@ -87,7 +117,7 @@ func TestNode_NextNodes_ReturnsOneRightChildNode(t *testing.T) {
 		t.Errorf("Expected %#v to be a right node but was left.", nextNodes[1])
 	}
 
-	if nextNodes[1].idx != node.idx + 1 {
-		t.Errorf("Expected idx to be %d but was %d", node.idx + 1, nextNodes[1].idx)
+	if nextNodes[1].idx != node.idx+1 {
+		t.Errorf("Expected idx to be %d but was %d", node.idx+1, nextNodes[1].idx)
 	}
 }

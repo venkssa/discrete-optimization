@@ -1,18 +1,18 @@
 package knapsack
 
-type node struct {
+type Node struct {
 	idx          uint32
 	selections   []selection
 	usedCapacity uint32
 	estimate     float64
 }
 
-func (n *node) IsLeft() bool {
+func (n *Node) IsLeft() bool {
 	return n.selections[n.idx] == SELECTED
 }
 
-func (n *node) NextNodes(knapsack *Knapsack) []*node {
-	nodes := []*node{}
+func (n *Node) NextNodes(knapsack *Knapsack) []*Node {
+	nodes := []*Node{}
 	if n.IsLeft() {
 		nodes = append(nodes, n.rightNode(knapsack))
 	}
@@ -30,21 +30,21 @@ func (n *node) NextNodes(knapsack *Knapsack) []*node {
 	return nodes
 }
 
-func (n *node) rightNode(knapsack *Knapsack) *node {
+func (n *Node) rightNode(knapsack *Knapsack) *Node {
 	selections := append([]selection{}, n.selections...)
 	selections[n.idx] = SKIPPED
-	return &node{
+	return &Node{
 		idx:          n.idx,
 		selections:   selections,
 		usedCapacity: n.usedCapacity - knapsack.Items[n.idx].Weight,
 		estimate:     Estimate(knapsack, selections)}
 }
 
-func (n *node) leftChildNode(knapsack *Knapsack) *node {
+func (n *Node) leftChildNode(knapsack *Knapsack) *Node {
 	childIdx := n.idx + 1
 	selections := n.selections[0 : childIdx+1]
 	selections[childIdx] = SELECTED
-	return &node{
+	return &Node{
 		idx:          childIdx,
 		selections:   selections,
 		usedCapacity: n.usedCapacity + knapsack.Items[childIdx].Weight,
@@ -52,12 +52,12 @@ func (n *node) leftChildNode(knapsack *Knapsack) *node {
 	}
 }
 
-func (n *node) rightChildNode(knapsack *Knapsack) *node {
+func (n *Node) rightChildNode(knapsack *Knapsack) *Node {
 	childIdx := n.idx + 1
 	selections := n.selections[0 : childIdx+1]
 	selections[childIdx] = SKIPPED
 
-	return &node{
+	return &Node{
 		idx:          childIdx,
 		selections:   selections,
 		usedCapacity: n.usedCapacity,

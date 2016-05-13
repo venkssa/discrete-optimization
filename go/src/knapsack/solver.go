@@ -7,6 +7,22 @@ type Node struct {
 	estimate     float64
 }
 
+func RootNode(knapsack *Knapsack) *Node {
+	selections := make([]selection, len(knapsack.Items))
+	usedCapacity := uint32(0)
+	if knapsack.Items[0].Weight <= knapsack.Capacity {
+		selections[0] = SELECTED
+		usedCapacity = knapsack.Items[0].Weight
+	}
+
+	return &Node{
+		idx: 0,
+		selections: selections[0:1],
+		usedCapacity: usedCapacity,
+		estimate: Estimate(knapsack, selections[0:1]),
+	}
+}
+
 func (n *Node) IsLeft() bool {
 	return n.selections[n.idx] == SELECTED
 }

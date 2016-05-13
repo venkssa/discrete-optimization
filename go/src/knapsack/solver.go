@@ -1,7 +1,7 @@
 package knapsack
 
 type Node struct {
-	idx          uint32
+	Idx          uint32
 	selections   []selection
 	usedCapacity uint32
 	estimate     float64
@@ -16,15 +16,15 @@ func RootNode(knapsack *Knapsack) *Node {
 	}
 
 	return &Node{
-		idx: 0,
-		selections: selections[0:1],
+		Idx:          0,
+		selections:   selections[0:1],
 		usedCapacity: usedCapacity,
-		estimate: Estimate(knapsack, selections[0:1]),
+		estimate:     Estimate(knapsack, selections[0:1]),
 	}
 }
 
 func (n *Node) IsLeft() bool {
-	return n.selections[n.idx] == SELECTED
+	return n.selections[n.Idx] == SELECTED
 }
 
 func (n *Node) NextNodes(knapsack *Knapsack) []*Node {
@@ -33,7 +33,7 @@ func (n *Node) NextNodes(knapsack *Knapsack) []*Node {
 		nodes = append(nodes, n.rightNode(knapsack))
 	}
 
-	childIdx := n.idx + 1
+	childIdx := n.Idx + 1
 	if childIdx < uint32(len(knapsack.Items)) {
 		remainingCapacity := knapsack.Capacity - n.usedCapacity
 		if remainingCapacity >= knapsack.Items[childIdx].Weight {
@@ -48,20 +48,20 @@ func (n *Node) NextNodes(knapsack *Knapsack) []*Node {
 
 func (n *Node) rightNode(knapsack *Knapsack) *Node {
 	selections := append([]selection{}, n.selections...)
-	selections[n.idx] = SKIPPED
+	selections[n.Idx] = SKIPPED
 	return &Node{
-		idx:          n.idx,
+		Idx:          n.Idx,
 		selections:   selections,
-		usedCapacity: n.usedCapacity - knapsack.Items[n.idx].Weight,
+		usedCapacity: n.usedCapacity - knapsack.Items[n.Idx].Weight,
 		estimate:     Estimate(knapsack, selections)}
 }
 
 func (n *Node) leftChildNode(knapsack *Knapsack) *Node {
-	childIdx := n.idx + 1
+	childIdx := n.Idx + 1
 	selections := n.selections[0 : childIdx+1]
 	selections[childIdx] = SELECTED
 	return &Node{
-		idx:          childIdx,
+		Idx:          childIdx,
 		selections:   selections,
 		usedCapacity: n.usedCapacity + knapsack.Items[childIdx].Weight,
 		estimate:     Estimate(knapsack, selections),
@@ -69,12 +69,12 @@ func (n *Node) leftChildNode(knapsack *Knapsack) *Node {
 }
 
 func (n *Node) rightChildNode(knapsack *Knapsack) *Node {
-	childIdx := n.idx + 1
+	childIdx := n.Idx + 1
 	selections := n.selections[0 : childIdx+1]
 	selections[childIdx] = SKIPPED
 
 	return &Node{
-		idx:          childIdx,
+		Idx:          childIdx,
 		selections:   selections,
 		usedCapacity: n.usedCapacity,
 		estimate:     Estimate(knapsack, selections),

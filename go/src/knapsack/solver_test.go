@@ -1,6 +1,9 @@
 package knapsack
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestNode_IsLeft(t *testing.T) {
 	tests := []struct {
@@ -8,11 +11,11 @@ func TestNode_IsLeft(t *testing.T) {
 		isLeft bool
 	}{
 		{
-			node:   Node{idx: 0, selections: []selection{SELECTED}},
+			node:   Node{Idx: 0, selections: []selection{SELECTED}},
 			isLeft: true,
 		},
 		{
-			node:   Node{idx: 0, selections: []selection{SKIPPED}},
+			node:   Node{Idx: 0, selections: []selection{SKIPPED}},
 			isLeft: false,
 		},
 	}
@@ -40,7 +43,7 @@ func TestNode_NextNodes_OnALeft_ReturnsRightNodeAsTheFirstResult(t *testing.T) {
 	}
 
 	selections := []selection{SELECTED, SKIPPED}
-	node := Node{idx: 0, selections: selections[0:1], usedCapacity: 5, estimate: Estimate(knapsack, selections)}
+	node := Node{Idx: 0, selections: selections[0:1], usedCapacity: 5, estimate: Estimate(knapsack, selections)}
 
 	nextNodes := node.NextNodes(knapsack)
 
@@ -51,145 +54,132 @@ func TestNode_NextNodes_OnALeft_ReturnsRightNodeAsTheFirstResult(t *testing.T) {
 	if nextNodes[0].IsLeft() != false {
 		t.Error("Expected next node to be a right node but was left.")
 	}
-	if nextNodes[0].idx != node.idx {
-		t.Errorf("Expected idx to be %d but was %d", node.idx, nextNodes[0].idx)
+	if nextNodes[0].Idx != node.Idx {
+		t.Errorf("Expected idx to be %d but was %d", node.Idx, nextNodes[0].Idx)
 	}
 }
 
-func TestNode_NextNodes_ReturnsOneLeftChildNode(t *testing.T) {
-	knapsack := &Knapsack{
-		Capacity: 7,
-		Items: []Item{
-			{
-				Value: 5,
-				Weight: 2,
+func TestNode_NextNodes_ReturnsTheCorrectChildNode(t *testing.T) {
+	tests := []struct {
+		capacity uint32
+		expectedNode         Node
+	}{
+		{
+			capacity: 7,
+			expectedNode: Node{
+				Idx: 1,
+				selections: []selection{SELECTED, SELECTED},
+				usedCapacity: 7,
+				estimate: 7.0,
 			},
-			{
-				Value: 2,
-				 Weight: 5,
+		},
+		{
+			capacity: 6,
+			expectedNode: Node{
+				Idx: 1,
+				selections: []selection{SELECTED, SKIPPED},
+				usedCapacity: 2,
+				estimate: 5.0,
 			},
 		},
 	}
 
-	selections := []selection{SELECTED, SKIPPED}
-	node := Node{idx: 0, selections: selections[0:1], usedCapacity: 2, estimate: Estimate(knapsack, selections)}
-
-	nextNodes := node.NextNodes(knapsack)
-
-	if len(nextNodes) != 2 {
-		t.Fatalf("Expected 2 next node but was %d", len(nextNodes))
-	}
-
-	if nextNodes[1].IsLeft() == false {
-		t.Errorf("Expected %#v to be a left node but was right.", nextNodes[1])
-	}
-
-	if nextNodes[1].idx != node.idx+1 {
-		t.Errorf("Expected idx to be %d but was %d", node.idx+1, nextNodes[1].idx)
-	}
-}
-
-func TestNode_NextNodes_ReturnsOneRightChildNode(t *testing.T) {
-	knapsack := &Knapsack{
-		Capacity: 7,
-		Items: []Item{
-			{
-				Value: 5,
-				Weight: 2,
+	for _, test := range tests {
+		knapsack := &Knapsack{
+			Capacity: test.capacity,
+			Items: []Item{
+				{
+					Value:  5,
+					Weight: 2,
+				},
+				{
+					Value:  2,
+					Weight: 5,
+				},
 			},
-			{
-				Value: 2,
-				Weight: 6,
-			},
-		},
-	}
+		}
+		selections := []selection{SELECTED, SKIPPED}
+		node := Node{Idx: 0, selections: selections[0:1], usedCapacity: 2,
+			estimate: Estimate(knapsack, selections)}
 
-	selections := []selection{SELECTED, SKIPPED}
-	node := Node{idx: 0, selections: selections[0:1], usedCapacity: 2, estimate: Estimate(knapsack, selections)}
+		nextNodes := node.NextNodes(knapsack)
 
-	nextNodes := node.NextNodes(knapsack)
+		if len(nextNodes) != 2 {
+			t.Fatalf("Expected 2 next node but was %d", len(nextNodes))
+		}
 
-	if len(nextNodes) != 2 {
-		t.Fatalf("Expected 2 next node but was %d", len(nextNodes))
-	}
-
-	if nextNodes[1].IsLeft() == true {
-		t.Errorf("Expected %#v to be a right node but was left.", nextNodes[1])
-	}
-
-	if nextNodes[1].idx != node.idx+1 {
-		t.Errorf("Expected idx to be %d but was %d", node.idx+1, nextNodes[1].idx)
+		verifyNode(t, nextNodes[1], &test.expectedNode)
 	}
 }
 
 func TestRootNode(t *testing.T) {
 	tests := []struct {
-		knapsack *Knapsack
-		expectedSelectionCap int
-		expectedSelections []selection
-		expectedUsedCapacity uint32
-		expectedEstimate float64
+		knapsack             *Knapsack
+		expectedNode         Node
 	}{
 		{
 			knapsack: ks_4_0_Knapsack(),
-			expectedSelections: []selection{SELECTED},
-			expectedSelectionCap: 4,
-			expectedUsedCapacity: 4,
-			expectedEstimate: 21.75,
+			expectedNode: Node{
+				Idx:          0,
+				selections:   []selection{SELECTED, SKIPPED, SKIPPED, SKIPPED}[0:1],
+				usedCapacity: 4,
+				estimate:     21.75,
+			},
 		},
 		{
 			knapsack: &Knapsack{
 				Capacity: 7,
 				Items: []Item{
 					{
-						Value: 10,
+						Value:  10,
 						Weight: 10,
 					},
 					{
-						Value: 2,
+						Value:  2,
 						Weight: 2,
 					},
 				},
 			},
-			expectedSelections: []selection{SKIPPED},
-			expectedSelectionCap: 2,
-			expectedUsedCapacity: 0,
-			expectedEstimate: 2.0,
+			expectedNode: Node{
+				Idx:          0,
+				selections:   []selection{SKIPPED, SKIPPED}[0:1],
+				usedCapacity: 0,
+				estimate:     2.0,
+			},
 		},
 	}
 
 	for _, test := range tests {
-		rootNode := RootNode(test.knapsack)
-
-		if rootNode.idx != 0 {
-			t.Errorf("Expected a root node with idx 0 but was %#v", rootNode)
-		}
-
-		if len(rootNode.selections) != len(test.expectedSelections) {
-			t.Errorf("Expected root node to have %d selection but had %d",
-				len(test.expectedSelections), len(rootNode.selections))
-		}
-
-		for idx, selection := range test.expectedSelections {
-			if selection != rootNode.selections[idx] {
-				t.Errorf("Expected root node to have a selection %d at idx %d but was %d",
-					selection, idx, rootNode.selections[idx])
-			}
-		}
-
-		if cap(rootNode.selections) != test.expectedSelectionCap {
-			t.Errorf("Expected capacity of root node's selection to be %d but was %d",
-				test.expectedSelectionCap, cap(rootNode.selections))
-		}
-
-		if rootNode.usedCapacity != test.expectedUsedCapacity {
-			t.Errorf("Expected usedCapacity of root node to be %d but was %d",
-				test.expectedUsedCapacity, rootNode.usedCapacity)
-		}
-
-		if rootNode.estimate != test.expectedEstimate {
-			t.Errorf("Expected estimate of root node to be %f but was %f",
-				test.expectedEstimate, rootNode.estimate)
-		}
+		verifyNode(t, RootNode(test.knapsack), &test.expectedNode)
 	}
 }
+
+func verifyNode(t *testing.T, actualNode *Node, expectedNode *Node) {
+	if actualNode.Idx != expectedNode.Idx {
+		t.Errorf("Expected idx to be %d but was %d", expectedNode.Idx, actualNode.Idx)
+	}
+
+	if len(actualNode.selections) != len(expectedNode.selections) {
+		t.Errorf("Expected node to have %d selections but had %d",
+			len(expectedNode.selections), len(actualNode.selections))
+	}
+
+	if !reflect.DeepEqual(actualNode.selections, expectedNode.selections) {
+		t.Errorf("Expected %v selections but was %v", expectedNode.selections, actualNode.selections)
+	}
+
+	if cap(actualNode.selections) != cap(expectedNode.selections) {
+		t.Errorf("Expected capacity of node's selection to be %d but was %d",
+			cap(expectedNode.selections), cap(actualNode.selections))
+	}
+
+	if actualNode.usedCapacity != expectedNode.usedCapacity {
+		t.Errorf("Expected usedCapacity of node to be %d but was %d",
+			expectedNode.usedCapacity, actualNode.usedCapacity)
+	}
+
+	if actualNode.estimate != expectedNode.estimate {
+		t.Errorf("Expected estimate of node to be %f but was %f", expectedNode.estimate, actualNode.estimate)
+	}
+}
+

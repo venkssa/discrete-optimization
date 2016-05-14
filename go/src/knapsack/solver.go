@@ -1,5 +1,35 @@
 package knapsack
 
+func ComputeOptimumKnapsack(knapsack Knapsack) *Node {
+	queue := []*Node{rootNode(&knapsack)}
+	var optNode *Node
+
+	for len(queue) != 0 {
+		lastIdx := len(queue) - 1
+		node := queue[lastIdx]
+		nextNodes := node.NextNodes(&knapsack)
+
+		queue = queue[0:lastIdx:lastIdx]
+
+		for _, nextNode := range nextNodes {
+			if optNode == nil {
+				queue = append(queue, nextNode)
+			} else if nextNode.estimate > optNode.estimate {
+				queue = append(queue, nextNode)
+			}
+		}
+
+		if len(node.selections) != len(knapsack.Items) {
+			continue
+		}
+
+		if optNode == nil || node.estimate > optNode.estimate {
+			optNode = node
+		}
+	}
+	return optNode
+}
+
 type Node struct {
 	Idx          uint32
 	selections   []selection
@@ -7,7 +37,7 @@ type Node struct {
 	estimate     float64
 }
 
-func RootNode(knapsack *Knapsack) *Node {
+func rootNode(knapsack *Knapsack) *Node {
 	selections := make([]selection, len(knapsack.Items))
 	usedCapacity := uint32(0)
 	if knapsack.Items[0].Weight <= knapsack.Capacity {
@@ -23,13 +53,13 @@ func RootNode(knapsack *Knapsack) *Node {
 	}
 }
 
-func (n *Node) IsLeft() bool {
+func (n *Node) isLeft() bool {
 	return n.selections[n.Idx] == SELECTED
 }
 
 func (n *Node) NextNodes(knapsack *Knapsack) []*Node {
 	nodes := []*Node{}
-	if n.IsLeft() {
+	if n.isLeft() {
 		nodes = append(nodes, n.rightNode(knapsack))
 	}
 
@@ -47,8 +77,10 @@ func (n *Node) NextNodes(knapsack *Knapsack) []*Node {
 }
 
 func (n *Node) rightNode(knapsack *Knapsack) *Node {
-	selections := append([]selection{}, n.selections...)
+	selections := make([]selection, len(knapsack.Items))
+	numElemCopied := copy(selections, n.selections)
 	selections[n.Idx] = SKIPPED
+	selections = selections[0:numElemCopied]
 	return &Node{
 		Idx:          n.Idx,
 		selections:   selections,

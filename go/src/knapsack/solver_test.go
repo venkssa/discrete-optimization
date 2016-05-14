@@ -21,8 +21,8 @@ func TestNode_IsLeft(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if test.node.IsLeft() != test.isLeft {
-			t.Errorf("Expected isLeft = %v but was %v (%#v)", test.isLeft, test.node.IsLeft(), test.node)
+		if test.node.isLeft() != test.isLeft {
+			t.Errorf("Expected isLeft = %v but was %v (%#v)", test.isLeft, test.node.isLeft(), test.node)
 		}
 	}
 }
@@ -51,7 +51,7 @@ func TestNode_NextNodes_OnALeft_ReturnsRightNodeAsTheFirstResult(t *testing.T) {
 		t.Fatalf("Expected 2 next node but was %d", len(nextNodes))
 	}
 
-	if nextNodes[0].IsLeft() != false {
+	if nextNodes[0].isLeft() != false {
 		t.Error("Expected next node to be a right node but was left.")
 	}
 	if nextNodes[0].Idx != node.Idx {
@@ -61,25 +61,25 @@ func TestNode_NextNodes_OnALeft_ReturnsRightNodeAsTheFirstResult(t *testing.T) {
 
 func TestNode_NextNodes_ReturnsTheCorrectChildNode(t *testing.T) {
 	tests := []struct {
-		capacity uint32
-		expectedNode         Node
+		capacity     uint32
+		expectedNode Node
 	}{
 		{
 			capacity: 7,
 			expectedNode: Node{
-				Idx: 1,
-				selections: []selection{SELECTED, SELECTED},
+				Idx:          1,
+				selections:   []selection{SELECTED, SELECTED},
 				usedCapacity: 7,
-				estimate: 7.0,
+				estimate:     7.0,
 			},
 		},
 		{
 			capacity: 6,
 			expectedNode: Node{
-				Idx: 1,
-				selections: []selection{SELECTED, SKIPPED},
+				Idx:          1,
+				selections:   []selection{SELECTED, SKIPPED},
 				usedCapacity: 2,
-				estimate: 5.0,
+				estimate:     5.0,
 			},
 		},
 	}
@@ -114,8 +114,8 @@ func TestNode_NextNodes_ReturnsTheCorrectChildNode(t *testing.T) {
 
 func TestRootNode(t *testing.T) {
 	tests := []struct {
-		knapsack             *Knapsack
-		expectedNode         Node
+		knapsack     *Knapsack
+		expectedNode Node
 	}{
 		{
 			knapsack: ks_4_0_Knapsack(),
@@ -150,8 +150,42 @@ func TestRootNode(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		verifyNode(t, RootNode(test.knapsack), &test.expectedNode)
+		verifyNode(t, rootNode(test.knapsack), &test.expectedNode)
 	}
+}
+
+func TestComputeOptimumKnapsack(t *testing.T) {
+	tests := []struct {
+		knapsack         *Knapsack
+		expectedEstimate float64
+	}{
+		{
+			knapsack:         ks_4_0_Knapsack(),
+			expectedEstimate: 19,
+		},
+		{
+			knapsack:         ks_19_0_Knapsack(),
+			expectedEstimate: 12248,
+		},
+		{
+			knapsack:         ks_40_0_Knapsack(),
+			expectedEstimate: 99924,
+		},
+		{
+			knapsack:         ks_50_0_Knapsack(),
+			expectedEstimate: 142156,
+		},
+	}
+
+	for _, test := range tests {
+		node := ComputeOptimumKnapsack(*test.knapsack)
+		if node.estimate != test.expectedEstimate {
+			t.Errorf("Expected optimum value to be %f but was %f", test.expectedEstimate, node.estimate)
+		}
+
+		t.Log(node)
+	}
+
 }
 
 func verifyNode(t *testing.T, actualNode *Node, expectedNode *Node) {
@@ -182,4 +216,3 @@ func verifyNode(t *testing.T, actualNode *Node, expectedNode *Node) {
 		t.Errorf("Expected estimate of node to be %f but was %f", expectedNode.estimate, actualNode.estimate)
 	}
 }
-

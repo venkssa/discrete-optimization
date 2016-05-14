@@ -3,6 +3,7 @@ package knapsack
 import (
 	"io/ioutil"
 	"strings"
+	"os"
 )
 
 func ks_4_0_Knapsack() *Knapsack {
@@ -34,6 +35,10 @@ func ks_19_0_Knapsack() *Knapsack {
 		667 2034
 		1833 4766
 		16553 40006`)
+}
+
+func ks_30_0_Knapsack() *Knapsack {
+	return newKnapsackOrPanicOnFailureFile("data/ks_30_0")
 }
 
 func ks_40_0_Knapsack() *Knapsack {
@@ -132,6 +137,34 @@ func ks_50_0_Knapsack() *Knapsack {
 		23552 56804
 		23552 56804
 		67 634`)
+}
+
+func ks_200_0_Knapsack() *Knapsack {
+	return newKnapsackOrPanicOnFailureFile("data/ks_200_0")
+}
+
+func ks_400_0_Knapsack() *Knapsack {
+	return newKnapsackOrPanicOnFailureFile("data/ks_400_0")
+}
+
+func ks_1000_0_Knapsack() *Knapsack {
+	return newKnapsackOrPanicOnFailureFile("data/ks_1000_0")
+}
+
+func ks_10000_0_Knapsack() *Knapsack {
+	return newKnapsackOrPanicOnFailureFile("data/ks_10000_0")
+}
+
+func newKnapsackOrPanicOnFailureFile(path string) *Knapsack {
+	file, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+	knapsack, err := NewKnapsack(file)
+	if err != nil {
+		panic(err)
+	}
+	return &knapsack
 }
 
 func newKnapsackOrPanicOnFailure(str string) *Knapsack {

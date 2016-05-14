@@ -157,30 +157,50 @@ func TestRootNode(t *testing.T) {
 func TestComputeOptimumKnapsack(t *testing.T) {
 	tests := []struct {
 		knapsack         *Knapsack
-		expectedEstimate float64
+		expectedOptValue float64
 	}{
 		{
 			knapsack:         ks_4_0_Knapsack(),
-			expectedEstimate: 19,
+			expectedOptValue: 19,
 		},
 		{
 			knapsack:         ks_19_0_Knapsack(),
-			expectedEstimate: 12248,
+			expectedOptValue: 12248,
+		},
+		{
+			knapsack:         ks_30_0_Knapsack(),
+			expectedOptValue: 99798,
 		},
 		{
 			knapsack:         ks_40_0_Knapsack(),
-			expectedEstimate: 99924,
+			expectedOptValue: 99924,
 		},
 		{
 			knapsack:         ks_50_0_Knapsack(),
-			expectedEstimate: 142156,
+			expectedOptValue: 142156,
+		},
+		{
+			knapsack:         ks_200_0_Knapsack(),
+			expectedOptValue: 100236,
+		},
+		{
+			knapsack:         ks_400_0_Knapsack(),
+			expectedOptValue: 3967180,
+		},
+		{
+			knapsack:         ks_1000_0_Knapsack(),
+			expectedOptValue: 109899,
+		},
+		{
+			knapsack:         ks_10000_0_Knapsack(),
+			expectedOptValue: 1099893,
 		},
 	}
 
 	for _, test := range tests {
 		node := ComputeOptimumKnapsack(*test.knapsack)
-		if node.estimate != test.expectedEstimate {
-			t.Errorf("Expected optimum value to be %f but was %f", test.expectedEstimate, node.estimate)
+		if node.estimate != test.expectedOptValue {
+			t.Errorf("Expected optimum value to be %f but was %f", test.expectedOptValue, node.estimate)
 		}
 
 		t.Log(node)

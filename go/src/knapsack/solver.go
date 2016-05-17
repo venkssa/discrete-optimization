@@ -5,7 +5,7 @@ func ComputeOptimumKnapsack(knapsack Knapsack) *Node {
 
 	for !queue.IsEmpty() {
 		node := queue.Pop()
-	
+
 		rightNode, childNode := node.NextNodes(&knapsack)
 
 		queue.Add(rightNode)
@@ -133,8 +133,7 @@ func estimate(knapsack *Knapsack, usedCapacity uint32, currentValue uint32, sele
 			estimate += float64(item.Value)
 			capacityLeft -= item.Weight
 		} else {
-			estimate += item.ValuePerUnitWeight() * float64(capacityLeft)
-			return estimate
+			return estimate + item.ValuePerUnitWeight * float64(capacityLeft)
 		}
 	}
 	return estimate

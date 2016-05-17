@@ -10,13 +10,19 @@ import (
 )
 
 type Item struct {
-	Idx    uint32
-	Weight uint32
-	Value  uint32
+	Idx                uint32
+	Weight             uint32
+	Value              uint32
+	ValuePerUnitWeight float64
 }
 
-func (item Item) ValuePerUnitWeight() float64 {
-	return float64(item.Value) / float64(item.Weight)
+func NewItem(idx uint32, value uint32, weight uint32) Item {
+	return Item{
+		Idx: idx,
+		Value: value,
+		Weight: weight,
+		ValuePerUnitWeight: float64(value) / float64(weight),
+	}
 }
 
 type Items []Item
@@ -26,7 +32,7 @@ func (items Items) Len() int {
 }
 
 func (items Items) Less(i, j int) bool {
-	return items[i].ValuePerUnitWeight() > items[j].ValuePerUnitWeight()
+	return items[i].ValuePerUnitWeight > items[j].ValuePerUnitWeight
 }
 
 func (items Items) Swap(i, j int) {
@@ -60,7 +66,7 @@ func NewKnapsack(reader io.ReadCloser) (Knapsack, error) {
 		if err != nil {
 			return knapsack, err
 		}
-		knapsack.Items = append(knapsack.Items, Item{Idx: idx, Value: value, Weight: weight})
+		knapsack.Items = append(knapsack.Items, NewItem(idx, value, weight))
 	}
 
 	if uint32(len(knapsack.Items)) != numberOfItems {

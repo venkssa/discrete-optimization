@@ -236,3 +236,38 @@ func verifyNode(t *testing.T, actualNode *Node, expectedNode *Node) {
 		t.Errorf("Expected estimate of node to be %f but was %f", expectedNode.estimate, actualNode.estimate)
 	}
 }
+
+func BenchmarkComputeOptimumKnapsack_ks_4_0(b *testing.B) {
+	benchmarkComputeOptimumKnapsack(b, *ks_4_0_Knapsack())
+}
+
+func BenchmarkComputeOptimumKnapsack_ks_19_0(b *testing.B) {
+	benchmarkComputeOptimumKnapsack(b, *ks_19_0_Knapsack())
+}
+
+func BenchmarkComputeOptimumKnapsack_ks_30_0(b *testing.B) {
+	benchmarkComputeOptimumKnapsack(b, *ks_30_0_Knapsack())
+}
+
+func BenchmarkComputeOptimumKnapsack_ks_50_0(b *testing.B) {
+	benchmarkComputeOptimumKnapsack(b, *ks_50_0_Knapsack())
+}
+
+func BenchmarkComputeOptimumKnapsack_ks_200_0(b *testing.B) {
+	benchmarkComputeOptimumKnapsack(b, *ks_200_0_Knapsack())
+}
+
+func BenchmarkComputeOptimumKnapsack_ks_1000_0(b *testing.B) {
+	benchmarkComputeOptimumKnapsack(b, *ks_1000_0_Knapsack())
+}
+
+func BenchmarkComputeOptimumKnapsack_ks_10000_0(b *testing.B) {
+	benchmarkComputeOptimumKnapsack(b, *ks_10000_0_Knapsack())
+}
+
+func benchmarkComputeOptimumKnapsack(b *testing.B, knapsack Knapsack) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		ComputeOptimumKnapsack(knapsack)
+	}
+}

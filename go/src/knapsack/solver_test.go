@@ -43,19 +43,15 @@ func TestNode_NextNodes_OnALeft_ReturnsRightNodeAsTheFirstResult(t *testing.T) {
 	}
 
 	selections := []selection{SELECTED, SKIPPED}
-	node := Node{Idx: 0, selections: selections[0:1], usedCapacity: 5, estimate: Estimate(knapsack, selections)}
+	node := Node{Idx: 0, selections: selections[0:1], usedCapacity: 5, estimate: estimate(knapsack, 5, 0, selections)}
 
-	nextNodes := node.NextNodes(knapsack)
+	rightNode, _ := node.NextNodes(knapsack)
 
-	if len(nextNodes) != 2 {
-		t.Fatalf("Expected 2 next node but was %d", len(nextNodes))
-	}
-
-	if nextNodes[0].isLeft() != false {
+	if rightNode.isLeft() != false {
 		t.Error("Expected next node to be a right node but was left.")
 	}
-	if nextNodes[0].Idx != node.Idx {
-		t.Errorf("Expected idx to be %d but was %d", node.Idx, nextNodes[0].Idx)
+	if rightNode.Idx != node.Idx {
+		t.Errorf("Expected idx to be %d but was %d", node.Idx, rightNode.Idx)
 	}
 }
 
@@ -70,6 +66,7 @@ func TestNode_NextNodes_ReturnsTheCorrectChildNode(t *testing.T) {
 				Idx:          1,
 				selections:   []selection{SELECTED, SELECTED},
 				usedCapacity: 7,
+				currentValue: 7,
 				estimate:     7.0,
 			},
 		},
@@ -79,6 +76,7 @@ func TestNode_NextNodes_ReturnsTheCorrectChildNode(t *testing.T) {
 				Idx:          1,
 				selections:   []selection{SELECTED, SKIPPED},
 				usedCapacity: 2,
+				currentValue: 5,
 				estimate:     5.0,
 			},
 		},
@@ -99,16 +97,12 @@ func TestNode_NextNodes_ReturnsTheCorrectChildNode(t *testing.T) {
 			},
 		}
 		selections := []selection{SELECTED, SKIPPED}
-		node := Node{Idx: 0, selections: selections[0:1], usedCapacity: 2,
-			estimate: Estimate(knapsack, selections)}
+		node := Node{Idx: 0, selections: selections[0:1], usedCapacity: 2, currentValue: 5,
+			estimate: estimate(knapsack, 2, 5, selections)}
 
-		nextNodes := node.NextNodes(knapsack)
+		_, childNode := node.NextNodes(knapsack)
 
-		if len(nextNodes) != 2 {
-			t.Fatalf("Expected 2 next node but was %d", len(nextNodes))
-		}
-
-		verifyNode(t, nextNodes[1], &test.expectedNode)
+		verifyNode(t, childNode, &test.expectedNode)
 	}
 }
 
@@ -123,6 +117,7 @@ func TestRootNode(t *testing.T) {
 				Idx:          0,
 				selections:   []selection{SELECTED, SKIPPED, SKIPPED, SKIPPED}[0:1],
 				usedCapacity: 4,
+				currentValue: 8,
 				estimate:     21.75,
 			},
 		},
@@ -230,6 +225,11 @@ func verifyNode(t *testing.T, actualNode *Node, expectedNode *Node) {
 	if actualNode.usedCapacity != expectedNode.usedCapacity {
 		t.Errorf("Expected usedCapacity of node to be %d but was %d",
 			expectedNode.usedCapacity, actualNode.usedCapacity)
+	}
+
+	if actualNode.currentValue != expectedNode.currentValue {
+		t.Errorf("Expected currentValue of node to be %d but was %d",
+			expectedNode.currentValue, actualNode.currentValue)
 	}
 
 	if actualNode.estimate != expectedNode.estimate {

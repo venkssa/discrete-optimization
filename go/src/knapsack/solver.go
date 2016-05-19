@@ -1,12 +1,13 @@
 package knapsack
 
-func ComputeOptimumKnapsack(knapsack Knapsack) *Node {
-	queue := newQueue(rootNode(&knapsack))
+func ComputeOptimumKnapsack(k Knapsack) *Node {
+	knapsack := &k
+	queue := newQueue(rootNode(knapsack))
 
 	for !queue.IsEmpty() {
 		node := queue.Pop()
 
-		rightNode, childNode := node.NextNodes(&knapsack)
+		rightNode, childNode := node.NextNodes(knapsack)
 
 		queue.Add(rightNode)
 		queue.Add(childNode)
@@ -133,7 +134,7 @@ func estimate(knapsack *Knapsack, usedCapacity uint32, currentValue uint32, sele
 			estimate += float64(item.Value)
 			capacityLeft -= item.Weight
 		} else {
-			return estimate + item.ValuePerUnitWeight * float64(capacityLeft)
+			return estimate + item.ValuePerUnitWeight*float64(capacityLeft)
 		}
 	}
 	return estimate
@@ -158,7 +159,7 @@ func (q *queue) Add(node *Node) {
 	}
 
 	if q.lastIdx == len(q.nodes)-1 {
-		nodes := make([]*Node, len(q.nodes) * 2)
+		nodes := make([]*Node, len(q.nodes)*2)
 		copy(nodes, q.nodes)
 		q.nodes = nodes
 	}

@@ -8,15 +8,15 @@ const (
 	UNSET color = iota
 )
 
-type domain struct {
+type DomainStore struct {
 	vertexColor []color
 }
 
-func (d *domain) IsSet(vertex uint32) bool {
+func (d *DomainStore) IsSet(vertex uint32) bool {
 	return d.vertexColor[vertex] != UNSET
 }
 
-func (d *domain) Set(vertex uint32, color color) error {
+func (d *DomainStore) Set(vertex uint32, color color) error {
 	if d.vertexColor[vertex] != UNSET {
 		return fmt.Errorf("Trying to set a color when vertex is already colored.")
 	}
@@ -24,11 +24,16 @@ func (d *domain) Set(vertex uint32, color color) error {
 	return nil
 }
 
-func (d *domain) Color(vertex uint32) color {
+func (d *DomainStore) Color(vertex uint32) color {
 	return d.vertexColor[vertex]
 }
 
-func newDomain(numVertices uint32) *domain {
-	return &domain{vertexColor: make([]color, numVertices)}
+func newDomainStore(numVertices uint32) *DomainStore {
+	return &DomainStore{vertexColor: make([]color, numVertices)}
 }
 
+func MakeACopy(d *DomainStore) *DomainStore {
+	colors := make([]color, len(d.vertexColor))
+	copy(colors, d.vertexColor)
+	return &DomainStore{vertexColor: colors}
+}

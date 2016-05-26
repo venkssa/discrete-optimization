@@ -3,7 +3,7 @@ package graph_coloring
 import "testing"
 
 func TestDomainVertex_SetAColor(t *testing.T) {
-	d := newDomain(2)
+	d := newDomainStore(2)
 
 	verifyVertexColor(t, d, 0, UNSET)
 	verifyVertexColor(t, d, 1, UNSET)
@@ -15,7 +15,7 @@ func TestDomainVertex_SetAColor(t *testing.T) {
 }
 
 func TestDomain_Set_AlreadySetColorReturnsAnError(t *testing.T) {
-	d := newDomain(2)
+	d := newDomainStore(2)
 
 	if err := d.Set(0, 1); err != nil {
 		t.Errorf("Expected a successs but was an error %v", err)
@@ -26,7 +26,22 @@ func TestDomain_Set_AlreadySetColorReturnsAnError(t *testing.T) {
 	}
 }
 
-func verifyVertexColor(t *testing.T, d *domain, vertex uint32, expectedColor color) {
+func TestCopy(t *testing.T) {
+	domain := newDomainStore(2)
+	domain.Set(0, 1)
+
+	copiedDomain := MakeACopy(domain)
+
+	if len(copiedDomain.vertexColor) != len(domain.vertexColor) {
+		t.Errorf("Expected the copied domain to have the same lenght as domain")
+	}
+
+	copiedDomain.Set(1, 1)
+	verifyVertexColor(t, domain, 1, UNSET)
+	verifyVertexColor(t, copiedDomain, 1, 1)
+}
+
+func verifyVertexColor(t *testing.T, d *DomainStore, vertex uint32, expectedColor color) {
 	if d.IsSet(vertex) == (expectedColor == UNSET) {
 		t.Errorf("Expected IsSet to be true but was false")
 	}

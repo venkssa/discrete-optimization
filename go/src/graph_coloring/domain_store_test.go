@@ -3,7 +3,7 @@ package graph_coloring
 import "testing"
 
 func TestDomainVertex_SetAColor(t *testing.T) {
-	d := newDomainStore(2)
+	d := NewDomainStore(2)
 
 	verifyVertexColor(t, d, 0, UNSET)
 	verifyVertexColor(t, d, 1, UNSET)
@@ -15,7 +15,7 @@ func TestDomainVertex_SetAColor(t *testing.T) {
 }
 
 func TestDomain_Set_AlreadySetColorReturnsAnError(t *testing.T) {
-	d := newDomainStore(2)
+	d := NewDomainStore(2)
 
 	if err := d.Set(0, 1); err != nil {
 		t.Errorf("Expected a successs but was an error %v", err)
@@ -27,12 +27,12 @@ func TestDomain_Set_AlreadySetColorReturnsAnError(t *testing.T) {
 }
 
 func TestCopy(t *testing.T) {
-	domain := newDomainStore(2)
+	domain := NewDomainStore(2)
 	domain.Set(0, 1)
 
 	copiedDomain := MakeACopy(domain)
 
-	if len(copiedDomain.vertexColor) != len(domain.vertexColor) {
+	if len(copiedDomain.vertexColors) != len(domain.vertexColors) {
 		t.Errorf("Expected the copied domain to have the same lenght as domain")
 	}
 

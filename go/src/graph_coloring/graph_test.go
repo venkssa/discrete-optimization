@@ -20,7 +20,7 @@ func TestNewGraph(t *testing.T) {
 		t.Errorf("Expecetd 3 edges but got %d", numOfEdges)
 	}
 
-	expectedEdges := [][]Vertex {
+	expectedEdges := [][]uint32{
 		{
 			1,
 		},

@@ -9,31 +9,31 @@ const (
 )
 
 type DomainStore struct {
-	vertexColor []color
+	vertexColors []color
 }
 
 func (d *DomainStore) IsSet(vertex uint32) bool {
-	return d.vertexColor[vertex] != UNSET
+	return d.vertexColors[vertex] != UNSET
 }
 
 func (d *DomainStore) Set(vertex uint32, color color) error {
-	if d.vertexColor[vertex] != UNSET {
+	if d.vertexColors[vertex] != UNSET {
 		return fmt.Errorf("Trying to set a color when vertex is already colored.")
 	}
-	d.vertexColor[vertex] = color
+	d.vertexColors[vertex] = color
 	return nil
 }
 
 func (d *DomainStore) Color(vertex uint32) color {
-	return d.vertexColor[vertex]
+	return d.vertexColors[vertex]
 }
 
-func newDomainStore(numVertices uint32) *DomainStore {
-	return &DomainStore{vertexColor: make([]color, numVertices)}
+func NewDomainStore(numVertices uint32) *DomainStore {
+	return &DomainStore{vertexColors: make([]color, numVertices)}
 }
 
 func MakeACopy(d *DomainStore) *DomainStore {
-	colors := make([]color, len(d.vertexColor))
-	copy(colors, d.vertexColor)
-	return &DomainStore{vertexColor: colors}
+	colors := make([]color, len(d.vertexColors))
+	copy(colors, d.vertexColors)
+	return &DomainStore{vertexColors: colors}
 }

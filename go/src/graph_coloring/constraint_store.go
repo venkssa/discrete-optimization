@@ -1,17 +1,22 @@
 package graph_coloring
 
-type AllDifferent struct {
+type Constraint interface {
+	IsFeasible(graph *Graph, domainStore *DomainStore) bool
+	Prune(graph *Graph, domainStore *DomainStore) bool
+}
+
+type NotEqual struct {
 	vertex uint32
 }
 
-func (ad AllDifferent) IsFeasible(graph *Graph, domainStore *DomainStore) bool {
-	vertexColor := domainStore.Color(ad.vertex)
+func (neq NotEqual) IsFeasible(graph *Graph, domainStore *DomainStore) bool {
+	vertexColor := domainStore.Color(neq.vertex)
 
 	if vertexColor == UNSET {
 		return true
 	}
 
-	for _, neighbor := range graph.Neighbors(ad.vertex) {
+	for _, neighbor := range graph.Neighbors(neq.vertex) {
 		neighborColor := domainStore.Color(neighbor)
 
 		if neighborColor != UNSET && neighborColor == vertexColor {
@@ -22,10 +27,14 @@ func (ad AllDifferent) IsFeasible(graph *Graph, domainStore *DomainStore) bool {
 	return true
 }
 
-func (ad AllDifferent) Prune(graph *Graph, domainStore *DomainStore) bool {
+func (neq NotEqual) Prune(graph *Graph, domainStore *DomainStore) bool {
 	colorPalette := make([]bool, graph.NumOfVertices)
 
-	for _, neighbor := range graph.Neighbors(ad.vertex) {
+	if domainStore.IsSet(neq.vertex) {
+		return false
+	}
+
+	for _, neighbor := range graph.Neighbors(neq.vertex) {
 		neighborColor := domainStore.Color(neighbor)
 		if neighborColor == UNSET {
 			return false
@@ -35,9 +44,27 @@ func (ad AllDifferent) Prune(graph *Graph, domainStore *DomainStore) bool {
 
 	for idx, isColored := range colorPalette {
 		if !isColored {
-			domainStore.Set(ad.vertex, color(idx+1))
+			domainStore.Set(neq.vertex, color(idx + 1))
+			return true
 		}
 	}
 
+	return false
+}
+
+type MaxColor struct {
+	maxColor color
+}
+
+func (mc MaxColor) IsFeasible(graph *Graph, domainStore *DomainStore) bool {
+	for _, color := range domainStore.vertexColors {
+		if color > mc.maxColor {
+			return false
+		}
+	}
 	return true
+}
+
+func (mc MaxColor) Prune(graph *Graph, domainStore *DomainStore) bool {
+	return false
 }

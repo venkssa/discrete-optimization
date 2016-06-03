@@ -1,11 +1,17 @@
 package graph_coloring
 
-import "testing"
+import (
+	"testing"
+	"fmt"
+)
 
 func TestColorGraph(t *testing.T) {
-	graph := gc_4_1_Graph()
-	maxColor := color(4)
-	coloring := ColorGraph(graph, maxColor)
+	graph := gc_20_1_Graph()
+	maxColor := color(3)
+	fmt.Println(graph.VertextToEdges)
+	result := ColorGraph(graph, maxColor)
+
+	coloring := result.Coloring
 
 	if uint32(len(coloring)) != graph.NumOfVertices {
 		t.Errorf("Expected all nodes to be colored but was not %v", coloring)
@@ -18,4 +24,8 @@ func TestColorGraph(t *testing.T) {
 			t.Errorf("Expected vertex %v to be colored <= %v but was colored %v", idx, maxColor, color)
 		}
 	}
+
+	t.Log(coloring)
+	t.Log(result.Stats)
+	t.Log(graph.Neighbors(16))
 }

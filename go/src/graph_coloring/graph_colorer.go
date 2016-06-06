@@ -22,8 +22,8 @@ type result struct {
 	constraints []Constraint
 	maxColor    color
 
-	Stats       [][]uint32
-	Coloring    []color
+	Stats    [][]uint32
+	Coloring []color
 }
 
 func (res *result) tryAll(domain *DomainStore, vertexIdx uint32) {

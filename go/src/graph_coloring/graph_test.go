@@ -12,7 +12,7 @@ func TestNewGraph(t *testing.T) {
 	}
 
 	var numOfEdges uint32
-	for _, edge := range graph.VertextToEdges {
+	for _, edge := range graph.VertexToEdges {
 		numOfEdges += uint32(len(edge))
 	}
 
@@ -37,7 +37,7 @@ func TestNewGraph(t *testing.T) {
 		},
 	}
 
-	if len(expectedEdges) != len(graph.VertextToEdges) {
-		t.Errorf("Expected %d vertex but got %d", len(expectedEdges), len(graph.VertextToEdges))
+	if len(expectedEdges) != len(graph.VertexToEdges) {
+		t.Errorf("Expected %d vertex but got %d", len(expectedEdges), len(graph.VertexToEdges))
 	}
 }

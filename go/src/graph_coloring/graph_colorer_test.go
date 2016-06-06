@@ -2,13 +2,11 @@ package graph_coloring
 
 import (
 	"testing"
-	"fmt"
 )
 
 func TestColorGraph(t *testing.T) {
 	graph := gc_20_1_Graph()
 	maxColor := color(3)
-	fmt.Println(graph.VertextToEdges)
 	result := ColorGraph(graph, maxColor)
 
 	coloring := result.Coloring

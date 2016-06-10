@@ -1,8 +1,8 @@
 package graph_coloring
 
 func ColorGraph(graph *Graph, maxColor color) result {
-	constraints := append(buildAllDifferentConstraints(graph.NumOfVertices), MaxColor{maxColor})
-
+	constraints := append(BuildAllDifferentConstraint(graph, maxColor), MaxColor{maxColor})
+	constraints = append(constraints, buildNotEqualConstraints(graph.NumOfVertices)...)
 	ta := &result{
 		graph:       graph,
 		constraints: constraints,
@@ -64,10 +64,10 @@ func propogate(graph *Graph, domainStore *DomainStore, constraints []Constraint)
 	return true
 }
 
-func buildAllDifferentConstraints(numOfVertices uint32) []Constraint {
-	allDiff := make([]Constraint, numOfVertices)
+func buildNotEqualConstraints(numOfVertices uint32) []Constraint {
+	notEqual := make([]Constraint, numOfVertices)
 	for idx := uint32(0); idx < numOfVertices; idx++ {
-		allDiff[idx] = NotEqual{idx}
+		notEqual[idx] = NotEqual{idx}
 	}
-	return allDiff
+	return notEqual
 }

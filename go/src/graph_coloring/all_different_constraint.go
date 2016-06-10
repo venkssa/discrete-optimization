@@ -1,7 +1,93 @@
 package graph_coloring
 
+type AllDifferentConstraint struct {
+	vertices [3]uint32
+	maxColor color
+	adg      *allDifferentGraph
+}
+
+func (adc *AllDifferentConstraint) IsFeasible(graph *Graph, domainStore *DomainStore) bool {
+	if adc.adg == nil {
+		adc.adg = &allDifferentGraph{
+			map[int32][]color{},
+			make([]int32, adc.maxColor+2),
+			NewVisitKeeper(int(graph.NumOfVertices)),
+		}
+	}
+	for idx := range adc.adg.colorToVertexEdge {
+		adc.adg.colorToVertexEdge[idx] = -1
+	}
+
+	for _, vertex := range adc.vertices {
+		if color := domainStore.Color(vertex); color != UNSET {
+			adc.adg.colorToVertexEdge[int(color)] = int32(vertex)
+		}
+
+		colorPalette := make([]bool, int(adc.maxColor)+2)
+		for _, neighbor := range graph.Neighbors(vertex) {
+			neighborColor := domainStore.Color(neighbor)
+			if neighborColor == UNSET {
+				continue
+			}
+			colorPalette[neighborColor] = true
+		}
+		if color := domainStore.Color(vertex); color != UNSET {
+			colorPalette[int(color)] = true
+		}
+		possibleColors := []color{}
+		for idx, isColored := range colorPalette[1 : len(colorPalette)-1] {
+			if !isColored {
+				possibleColors = append(possibleColors, color(idx+1))
+			}
+		}
+		adc.adg.vertexToPossibleColors[int32(vertex)] = possibleColors
+	}
+
+	if adc.adg.MaximumMatching() == int32(len(adc.vertices)) {
+		return true
+	}
+	return false
+}
+
+func (adc *AllDifferentConstraint) Prune(graph *Graph, domainStore *DomainStore) bool {
+	return false
+}
+
+func BuildAllDifferentConstraint(graph *Graph, maxColor color) []Constraint {
+	res := find3VerticesCompleteGraph(graph)
+
+	constraints := make([]Constraint, len(res))
+
+	for idx := 0; idx < len(res); idx++ {
+		constraints[idx] = &AllDifferentConstraint{res[idx], maxColor, nil}
+	}
+
+	return constraints
+}
+
+func find3VerticesCompleteGraph(graph *Graph) [][3]uint32 {
+	res := [][3]uint32{}
+	for vertexIdx, neighbors := range graph.VertexToEdges {
+		if len(neighbors) < 2 {
+			continue
+		}
+
+		for _, outerNeighborIdx := range neighbors {
+			for _, innerNeighborIdx := range neighbors {
+				if outerNeighborIdx < uint32(vertexIdx) || innerNeighborIdx < outerNeighborIdx {
+					continue
+				}
+				if graph.AreNeighbors(outerNeighborIdx, innerNeighborIdx) {
+					res = append(res, [3]uint32{uint32(vertexIdx), outerNeighborIdx, innerNeighborIdx})
+				}
+			}
+		}
+	}
+	return res
+}
+
 type allDifferentGraph struct {
-	vertexToPossibleColors [][]color
+	vertexToPossibleColors map[int32][]color
 	colorToVertexEdge      []int32
 	vk                     *visitKeeper
 }
@@ -20,10 +106,10 @@ func (adg *allDifferentGraph) VertexColor(v int32) int32 {
 }
 
 func (adg *allDifferentGraph) MaximumMatching() int32 {
-	for vertex := 0; vertex < len(adg.vertexToPossibleColors); vertex++ {
-		if adg.IsFreeVertex(int32(vertex)) {
-			path := adg.findAlternatingPath(uint32(vertex))
+	for vertex := range adg.vertexToPossibleColors {
+		if adg.IsFreeVertex(vertex) {
 			adg.vk.Reset()
+			path := adg.findAlternatingPath(uint32(vertex))
 			if len(path) == 0 {
 				break
 			}
@@ -43,8 +129,8 @@ func (adg *allDifferentGraph) MaximumMatching() int32 {
 
 	var maxMatching int32
 
-	for vertex := 0; vertex < len(adg.vertexToPossibleColors); vertex++ {
-		if !adg.IsFreeVertex(int32(vertex)) {
+	for vertex := range adg.vertexToPossibleColors {
+		if !adg.IsFreeVertex(vertex) {
 			maxMatching++
 		}
 	}
@@ -53,19 +139,17 @@ func (adg *allDifferentGraph) MaximumMatching() int32 {
 }
 
 type visitKeeper struct {
-	visitedVertices []bool
-	visitedBy       []int32
+	visitedVertices map[int32]bool
+	visitedBy       map[int32]int32
 }
 
 func NewVisitKeeper(numVertices int) *visitKeeper {
-	return &visitKeeper{make([]bool, numVertices), make([]int32, numVertices)}
+	return &visitKeeper{map[int32]bool{}, map[int32]int32{}}
 }
 
 func (vk *visitKeeper) Reset() {
-	for idx := 0; idx < len(vk.visitedBy); idx++ {
-		vk.visitedBy[idx] = 0
-		vk.visitedVertices[idx] = false
-	}
+	vk.visitedVertices = map[int32]bool{}
+	vk.visitedBy = map[int32]int32{}
 }
 
 func (adg *allDifferentGraph) findAlternatingPath(freeVertex uint32) []int32 {
@@ -93,7 +177,7 @@ func (adg *allDifferentGraph) findAlternatingPath(freeVertex uint32) []int32 {
 	return []int32{}
 }
 
-func buildAlternatingPath(adg *allDifferentGraph, visitedBy []int32, lastVisited int32) []int32 {
+func buildAlternatingPath(adg *allDifferentGraph, visitedBy map[int32]int32, lastVisited int32) []int32 {
 	path := make([]int32, 0, 2)
 	visitNext := lastVisited
 	loop := true

@@ -68,24 +68,3 @@ func (mc MaxColor) IsFeasible(graph *Graph, domainStore *DomainStore) bool {
 func (mc MaxColor) Prune(graph *Graph, domainStore *DomainStore) bool {
 	return false
 }
-
-func find3VerticesCompleteGraph(graph *Graph) [][3]uint32 {
-	res := [][3]uint32{}
-	for vertexIdx, neighbors := range graph.VertexToEdges {
-		if len(neighbors) < 2 {
-			continue
-		}
-
-		for _, outerNeighborIdx := range neighbors {
-			for _, innerNeighborIdx := range neighbors {
-				if outerNeighborIdx < uint32(vertexIdx) || innerNeighborIdx < outerNeighborIdx {
-					continue
-				}
-				if graph.AreNeighbors(outerNeighborIdx, innerNeighborIdx) {
-					res = append(res, [3]uint32{uint32(vertexIdx), outerNeighborIdx, innerNeighborIdx})
-				}
-			}
-		}
-	}
-	return res
-}

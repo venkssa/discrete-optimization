@@ -3,6 +3,7 @@ package graph_coloring
 import (
 	"io/ioutil"
 	"strings"
+	"os"
 )
 
 func gc_4_1_Graph() *Graph {
@@ -48,6 +49,18 @@ func gc_20_1_Graph() *Graph {
 		13 15
 		15 17
 		16 19`)
+}
+
+func gc_50_3_Graph() *Graph {
+	file, err := os.Open("data/gc_50_3")
+	if err != nil {
+		panic(err)
+	}
+	graph, err := NewGraph(file)
+	if err != nil {
+		panic(err)
+	}
+	return graph
 }
 
 func mustMakeGraph(graphStr string) *Graph {

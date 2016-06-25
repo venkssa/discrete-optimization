@@ -5,8 +5,8 @@ import (
 )
 
 func TestColorGraph(t *testing.T) {
-	graph := gc_20_1_Graph()
-	maxColor := color(3)
+	graph := gc_50_3_Graph()
+	maxColor := color(7)
 	result := ColorGraph(graph, maxColor)
 
 	coloring := result.Coloring
@@ -25,5 +25,4 @@ func TestColorGraph(t *testing.T) {
 
 	t.Log(coloring)
 	t.Log(result.Stats)
-	t.Log(graph.Neighbors(16))
 }

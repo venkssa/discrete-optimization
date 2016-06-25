@@ -5,6 +5,18 @@ import (
 	"testing"
 )
 
+func Test50Graph(t *testing.T) {
+	cliques := FindAllMaximalCliques(gc_50_3_Graph())
+
+	stats := map[int]int{}
+
+	for _, clique := range cliques {
+		stats[len(clique)] += 1
+	}
+
+	t.Log(stats)
+}
+
 func TestFindAllMaximalCliques(t *testing.T) {
 	tests := []struct {
 		graph           *Graph

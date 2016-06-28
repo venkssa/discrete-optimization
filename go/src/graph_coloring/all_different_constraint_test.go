@@ -91,51 +91,6 @@ func BenchmarkAllDifferentGraph_MaximumMatching(b *testing.B) {
 	}
 }
 
-func TestFind3VerticesCompleteGraph(t *testing.T) {
-	tests := []struct {
-		graph          *Graph
-		expectedResult [][3]uint32
-	}{
-		{
-			graph: mustMakeGraph(`3 3
-				0 1
-				0 2
-				1 2`),
-			expectedResult: [][3]uint32{{0, 1, 2}},
-		},
-		{
-			graph:          gc_4_1_Graph(),
-			expectedResult: [][3]uint32{},
-		},
-		{
-			graph:          gc_5_0_Graph(),
-			expectedResult: [][3]uint32{{0, 1, 2}, {0, 2, 3}, {0, 3, 4}},
-		},
-		{
-			graph:          gc_20_1_Graph(),
-			expectedResult: [][3]uint32{{2, 11, 17}},
-		},
-	}
-
-	for _, test := range tests {
-		res := find3VerticesCompleteGraph(test.graph)
-
-		if numOfRes, expectedNumOfRes := len(res), len(test.expectedResult); numOfRes != expectedNumOfRes {
-			t.Errorf("Expected %d 3-vertices complete graph but got %d", expectedNumOfRes, numOfRes)
-		}
-
-		for idx, vertices := range res {
-			if idx < len(test.expectedResult) {
-				if vertices != test.expectedResult[idx] {
-					t.Errorf("Expected %v but got %v", test.expectedResult[idx], vertices)
-				}
-			} else {
-				t.Errorf("Did not expected result %v", vertices)
-			}
-		}
-	}
-}
-
 func oneHopGraph() *allDifferentGraph {
 	return &allDifferentGraph{
 		map[int32][]color{

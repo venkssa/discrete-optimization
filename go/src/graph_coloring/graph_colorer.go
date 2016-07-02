@@ -3,10 +3,14 @@ package graph_coloring
 func ColorGraph(graph *Graph, maxColor color) result {
 	constraints := append(BuildAllDifferentConstraint(graph, maxColor), MaxColor{maxColor})
 	constraints = append(constraints, buildNotEqualConstraints(graph.NumOfVertices)...)
+
+	clique := NewCliques(FindAllMaximalCliques(graph), graph.NumOfVertices)
+
 	ta := &result{
 		graph:       graph,
 		constraints: constraints,
 		maxColor:    maxColor,
+		searchOrder: OrderVerticesByCliques(clique),
 		Stats:       make([][]uint32, graph.NumOfVertices),
 		Coloring:    nil}
 	for idx := 0; idx < len(ta.Stats); idx++ {
@@ -18,19 +22,20 @@ func ColorGraph(graph *Graph, maxColor color) result {
 }
 
 type result struct {
+	Stats    [][]uint32
+	Coloring []color
+
 	graph       *Graph
 	constraints []Constraint
 	maxColor    color
-
-	Stats    [][]uint32
-	Coloring []color
+	searchOrder []uint32
 }
 
 func (res *result) tryAll(domain *DomainStore, vertexIdx uint32) {
 	for currentColor := color(1); currentColor <= res.maxColor; currentColor++ {
 		res.Stats[vertexIdx][currentColor]++
 		cd := MakeACopy(domain)
-		cd.Set(vertexIdx, currentColor)
+		cd.Set(res.searchOrder[vertexIdx], currentColor)
 		if propogate(res.graph, cd, res.constraints) {
 			if cd.IsAllVertexColored() {
 				res.Coloring = cd.vertexColors

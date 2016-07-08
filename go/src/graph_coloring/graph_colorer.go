@@ -1,8 +1,8 @@
 package graph_coloring
 
 func ColorGraph(graph *Graph, maxColor color) result {
-	constraints := append(BuildAllDifferentConstraint(graph, maxColor), MaxColor{maxColor})
-	constraints = append(constraints, buildNotEqualConstraints(graph.NumOfVertices)...)
+	constraints := append(buildNotEqualConstraints(graph.NumOfVertices), MaxColor{maxColor: maxColor})
+	constraints = append(constraints, BuildAllDifferentConstraint(graph, maxColor)...)
 
 	clique := NewCliques(FindAllMaximalCliques(graph), graph.NumOfVertices)
 

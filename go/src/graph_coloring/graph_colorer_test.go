@@ -5,8 +5,8 @@ import (
 )
 
 func TestColorGraph(t *testing.T) {
-	graph := gc_20_1_Graph()
-	maxColor := color(3)
+	graph := gc_50_3_Graph()
+	maxColor := color(6)
 	result := ColorGraph(graph, maxColor)
 
 	coloring := result.Coloring
@@ -27,4 +27,10 @@ func TestColorGraph(t *testing.T) {
 	for k, v := range result.Stats {
 		t.Log(k, v)
 	}
+}
+
+func BenchmarkColorGraph(b *testing.B) {
+	graph := gc_50_3_Graph()
+	maxColor := color(6)
+	ColorGraph(graph, maxColor)
 }

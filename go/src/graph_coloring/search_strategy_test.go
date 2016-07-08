@@ -52,7 +52,7 @@ func TestOrderVertexForSearch(t *testing.T) {
 
 	actualOrder := OrderVerticesByCliques(cliques)
 
-	expectedOrder := []uint32{2, 0, 1, 3, 4}
+	expectedOrder := []uint32{2, 0, 3, 1, 4}
 
 	if !reflect.DeepEqual(actualOrder, expectedOrder) {
 		t.Errorf("Expected %v but was %v", expectedOrder, actualOrder)

@@ -94,3 +94,72 @@ func OrderVerticesByCliques(c *Cliques) []uint32 {
 
 	return orderedVertices.vertices
 }
+
+
+type verticesInCliqueLen struct {
+	vertices []uint32
+	counts   map[uint32]uint32
+}
+
+func (v *verticesInCliqueLen) Len() int {
+	return len(v.vertices)
+}
+
+func (v *verticesInCliqueLen) Swap(i, j int) {
+	v.vertices[j], v.vertices[i] = v.vertices[i], v.vertices[j]
+}
+
+func (v *verticesInCliqueLen) Less(i, j int) bool {
+	return v.counts[v.vertices[i]] >= v.counts[v.vertices[j]]
+}
+
+func newVerticesInCliqueLen(counts map[uint32]uint32) *verticesInCliqueLen {
+	vertices := make([]uint32, 0, len(counts))
+	for vertex := range counts {
+		vertices = append(vertices, vertex)
+	}
+	return &verticesInCliqueLen{vertices: vertices, counts: counts}
+}
+
+
+func OrderVerticesByCliqueLen(c *Cliques) []uint32 {
+	cliqueLenVerticesCount := map[uint32]map[uint32]uint32{}
+
+	for _, clique := range c.Cliques {
+		cliqueLen := uint32(len(clique))
+		if _, ok := cliqueLenVerticesCount[cliqueLen]; !ok {
+			cliqueLenVerticesCount[cliqueLen] = map[uint32]uint32{}
+		}
+	}
+
+	for _, clique := range c.Cliques {
+		cliqueLen := uint32(len(clique))
+		for _, vertex := range clique {
+			cliqueLenVerticesCount[cliqueLen][vertex]++
+		}
+	}
+
+	sortedVerticesByCliqueLen := map[uint32]*verticesInCliqueLen{}
+	for cliqueLen, counts := range cliqueLenVerticesCount {
+		sortableVertices := newVerticesInCliqueLen(counts)
+		sort.Sort(sortableVertices)
+
+		sortedVerticesByCliqueLen[cliqueLen] = sortableVertices
+	}
+
+	alreadyAddedVertex := map[uint32]bool{}
+	orderedVertices := make([]uint32, 0, c.NumOfVertices)
+
+	for cliqueLen := c.MaxCliqueLen; cliqueLen >= c.MinCliqueLen; cliqueLen-- {
+		if sortedVertices, ok := sortedVerticesByCliqueLen[cliqueLen]; ok {
+			for _, vertex := range sortedVertices.vertices {
+				if _, alreadyAdded := alreadyAddedVertex[vertex]; !alreadyAdded {
+					orderedVertices = append(orderedVertices, vertex)
+					alreadyAddedVertex[vertex] = true
+				}
+			}
+		}
+	}
+
+	return orderedVertices
+}

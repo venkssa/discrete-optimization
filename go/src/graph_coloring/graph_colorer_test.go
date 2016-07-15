@@ -23,14 +23,13 @@ func TestColorGraph(t *testing.T) {
 		}
 	}
 
-	t.Log(coloring)
+	reorders := make([]color, len(coloring))
+	for idx, vertexIdx := range result.searchOrder {
+		reorders[idx] = coloring[vertexIdx]
+	}
+	t.Log(reorders)
+	t.Log(result.searchOrder)
 	for k, v := range result.Stats {
 		t.Log(k, v)
 	}
-}
-
-func BenchmarkColorGraph(b *testing.B) {
-	graph := gc_50_3_Graph()
-	maxColor := color(6)
-	ColorGraph(graph, maxColor)
 }

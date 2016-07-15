@@ -10,7 +10,7 @@ func ColorGraph(graph *Graph, maxColor color) result {
 		graph:       graph,
 		constraints: constraints,
 		maxColor:    maxColor,
-		searchOrder: OrderVerticesByCliques(clique),
+		searchOrder: OrderVerticesByCliqueLen(clique),
 		Stats:       make([][]uint32, graph.NumOfVertices),
 		Coloring:    nil}
 	for idx := 0; idx < len(ta.Stats); idx++ {
@@ -32,10 +32,11 @@ type result struct {
 }
 
 func (res *result) tryAll(domain *DomainStore, vertexIdx uint32) {
+	vertex := res.searchOrder[vertexIdx]
 	for currentColor := color(1); currentColor <= res.maxColor; currentColor++ {
-		res.Stats[vertexIdx][currentColor]++
+		res.Stats[vertex][currentColor]++
 		cd := MakeACopy(domain)
-		cd.Set(res.searchOrder[vertexIdx], currentColor)
+		cd.Set(vertex, currentColor)
 		if propogate(res.graph, cd, res.constraints) {
 			if cd.IsAllVertexColored() {
 				res.Coloring = cd.vertexColors

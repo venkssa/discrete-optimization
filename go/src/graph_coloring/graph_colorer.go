@@ -1,6 +1,8 @@
 package graph_coloring
 
-func ColorGraph(graph *Graph, maxColor color) result {
+import "graph_coloring/graph"
+
+func ColorGraph(graph *graph.G, maxColor color) result {
 	constraints := append(buildNotEqualConstraints(graph.NumOfVertices), MaxColor{maxColor: maxColor})
 	constraints = append(constraints, BuildAllDifferentConstraint(graph, maxColor)...)
 
@@ -25,7 +27,7 @@ type result struct {
 	Stats    [][]uint32
 	Coloring []color
 
-	graph       *Graph
+	graph       *graph.G
 	constraints []Constraint
 	maxColor    color
 	searchOrder []uint32
@@ -51,7 +53,7 @@ func (res *result) tryAll(domain *DomainStore, vertexIdx uint32) {
 	return
 }
 
-func propogate(graph *Graph, domainStore *DomainStore, constraints []Constraint) bool {
+func propogate(graph *graph.G, domainStore *DomainStore, constraints []Constraint) bool {
 	for keepPropogating := true; keepPropogating; {
 		for _, constraint := range constraints {
 			if !constraint.IsFeasible(graph, domainStore) {

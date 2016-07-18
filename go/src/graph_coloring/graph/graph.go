@@ -1,16 +1,16 @@
-package graph_coloring
+package graph
 
 import (
 	"common"
 	"io"
 )
 
-type Graph struct {
+type G struct {
 	NumOfVertices uint32
 	VertexToEdges [][]uint32
 }
 
-func (g *Graph) AreNeighbors(vertex1 uint32, vertex2 uint32) bool {
+func (g *G) AreNeighbors(vertex1 uint32, vertex2 uint32) bool {
 	for _, neighborIdx := range g.Neighbors(vertex1) {
 		if neighborIdx == vertex2 {
 			return true
@@ -19,12 +19,12 @@ func (g *Graph) AreNeighbors(vertex1 uint32, vertex2 uint32) bool {
 	return false
 }
 
-func (g *Graph) Neighbors(vertex uint32) []uint32 {
+func (g *G) Neighbors(vertex uint32) []uint32 {
 	return g.VertexToEdges[int(vertex)]
 }
 
-func NewGraph(rc io.ReadCloser) (*Graph, error) {
-	graph := Graph{}
+func NewGraph(rc io.ReadCloser) (*G, error) {
+	graph := G{}
 
 	err := common.Parse(rc, func(line common.LineNum, d1 uint32, d2 uint32) {
 		if line == 1 {

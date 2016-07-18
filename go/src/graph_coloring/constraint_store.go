@@ -1,15 +1,17 @@
 package graph_coloring
 
+import "graph_coloring/graph"
+
 type Constraint interface {
-	IsFeasible(graph *Graph, domainStore *DomainStore) bool
-	Prune(graph *Graph, domainStore *DomainStore) bool
+	IsFeasible(graph *graph.G, domainStore *DomainStore) bool
+	Prune(graph *graph.G, domainStore *DomainStore) bool
 }
 
 type NotEqual struct {
 	vertex uint32
 }
 
-func (neq NotEqual) IsFeasible(graph *Graph, domainStore *DomainStore) bool {
+func (neq NotEqual) IsFeasible(graph *graph.G, domainStore *DomainStore) bool {
 	vertexColor := domainStore.Color(neq.vertex)
 
 	if vertexColor == UNSET {
@@ -27,7 +29,7 @@ func (neq NotEqual) IsFeasible(graph *Graph, domainStore *DomainStore) bool {
 	return true
 }
 
-func (neq NotEqual) Prune(graph *Graph, domainStore *DomainStore) bool {
+func (neq NotEqual) Prune(graph *graph.G, domainStore *DomainStore) bool {
 	colorPalette := make([]bool, graph.NumOfVertices)
 
 	if domainStore.IsSet(neq.vertex) {
@@ -56,7 +58,7 @@ type MaxColor struct {
 	maxColor color
 }
 
-func (mc MaxColor) IsFeasible(graph *Graph, domainStore *DomainStore) bool {
+func (mc MaxColor) IsFeasible(graph *graph.G, domainStore *DomainStore) bool {
 	for _, color := range domainStore.vertexColors {
 		if color > mc.maxColor {
 			return false
@@ -65,6 +67,6 @@ func (mc MaxColor) IsFeasible(graph *Graph, domainStore *DomainStore) bool {
 	return true
 }
 
-func (mc MaxColor) Prune(graph *Graph, domainStore *DomainStore) bool {
+func (mc MaxColor) Prune(graph *graph.G, domainStore *DomainStore) bool {
 	return false
 }

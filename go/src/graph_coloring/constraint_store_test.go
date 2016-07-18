@@ -1,6 +1,10 @@
 package graph_coloring
 
-import "testing"
+import (
+	"testing"
+	"graph_coloring/graph"
+	"graph_coloring/test_data"
+)
 
 func TestNotEqual_IsFeasible(t *testing.T) {
 	tests := []struct {
@@ -12,7 +16,7 @@ func TestNotEqual_IsFeasible(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		graph := gc_4_1_Graph()
+		graph := test_data.Gc_4_1_Graph()
 		domainStore := &DomainStore{test.vertexColors, 0}
 
 		constraint := NotEqual{uint32(1)}
@@ -25,7 +29,7 @@ func TestNotEqual_IsFeasible(t *testing.T) {
 }
 
 func TestNotEqual_IsNotFeasible(t *testing.T) {
-	graph := gc_4_1_Graph()
+	graph := test_data.Gc_4_1_Graph()
 
 	domainStore := &DomainStore{[]color{1, 1, 1, 1}, 0}
 
@@ -52,7 +56,7 @@ func TestNotEqual_Prune(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		graph := gc_4_1_Graph()
+		graph := test_data.Gc_4_1_Graph()
 		domainStore := &DomainStore{test.vertexColors, 0}
 
 		constraint := NotEqual{uint32(1)}
@@ -73,7 +77,7 @@ func TestNotEqual_Prune(t *testing.T) {
 }
 
 func TestNotEqual_NothingToPrune(t *testing.T) {
-	graph := gc_4_1_Graph()
+	graph := test_data.Gc_4_1_Graph()
 	domainStore := &DomainStore{[]color{UNSET, UNSET, 1, 1}, 0}
 	constraint := NotEqual{uint32(1)}
 
@@ -84,20 +88,20 @@ func TestNotEqual_NothingToPrune(t *testing.T) {
 
 func BenchmarkNotEqual_IsFeasible_UnsetVertex(b *testing.B) {
 	benchmarkIsFeasible(b,
-		gc_4_1_Graph(),
+		test_data.Gc_4_1_Graph(),
 		&DomainStore{[]color{1, UNSET, 1, 1}, 0},
 		NotEqual{uint32(1)})
 }
 
 func BenchmarkNotEqual_IsFeasible_SetVertex(b *testing.B) {
 	benchmarkIsFeasible(b,
-		gc_4_1_Graph(),
+		test_data.Gc_4_1_Graph(),
 		&DomainStore{[]color{1, 2, 1, 1}, 0},
 		NotEqual{uint32(1)})
 }
 
 func BenchmarkNotEqual_Prune(b *testing.B) {
-	graph := gc_4_1_Graph()
+	graph := test_data.Gc_4_1_Graph()
 	domainStore := &DomainStore{[]color{1, UNSET, 1, 1}, 0}
 	constraint := NotEqual{uint32(1)}
 
@@ -109,7 +113,7 @@ func BenchmarkNotEqual_Prune(b *testing.B) {
 	}
 }
 
-func benchmarkIsFeasible(b *testing.B, graph *Graph, domainStore *DomainStore, constraint NotEqual) {
+func benchmarkIsFeasible(b *testing.B, graph *graph.G, domainStore *DomainStore, constraint NotEqual) {
 	b.ResetTimer()
 	b.ReportAllocs()
 

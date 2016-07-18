@@ -1,12 +1,14 @@
 package graph_coloring
 
+import "graph_coloring/graph"
+
 type AllDifferentConstraint struct {
 	vertices []uint32
 	maxColor color
 	adg      *allDifferentGraph
 }
 
-func (adc *AllDifferentConstraint) IsFeasible(graph *Graph, domainStore *DomainStore) bool {
+func (adc *AllDifferentConstraint) IsFeasible(graph *graph.G, domainStore *DomainStore) bool {
 	if adc.adg == nil {
 		adc.adg = &allDifferentGraph{
 			map[int32][]color{},
@@ -49,11 +51,11 @@ func (adc *AllDifferentConstraint) IsFeasible(graph *Graph, domainStore *DomainS
 	return false
 }
 
-func (adc *AllDifferentConstraint) Prune(graph *Graph, domainStore *DomainStore) bool {
+func (adc *AllDifferentConstraint) Prune(graph *graph.G, domainStore *DomainStore) bool {
 	return false
 }
 
-func BuildAllDifferentConstraint(graph *Graph, maxColor color) []Constraint {
+func BuildAllDifferentConstraint(graph *graph.G, maxColor color) []Constraint {
 	cliques := FindAllMaximalCliques(graph)
 
 	constraints := []Constraint{}

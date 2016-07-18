@@ -3,10 +3,12 @@ package graph_coloring
 import (
 	"sort"
 	"testing"
+	"graph_coloring/graph"
+	"graph_coloring/test_data"
 )
 
 func Test50Graph(t *testing.T) {
-	cliques := FindAllMaximalCliques(gc_50_3_Graph())
+	cliques := FindAllMaximalCliques(test_data.Gc_50_3_Graph())
 
 	stats := map[int]int{}
 
@@ -19,19 +21,19 @@ func Test50Graph(t *testing.T) {
 
 func TestFindAllMaximalCliques(t *testing.T) {
 	tests := []struct {
-		graph           *Graph
+		graph           *graph.G
 		expectedResults [][]uint32
 	}{
 		{
-			graph:           gc_4_1_Graph(),
+			graph:           test_data.Gc_4_1_Graph(),
 			expectedResults: [][]uint32{{0, 1}, {1, 2}, {1, 3}},
 		},
 		{
-			graph:           gc_5_0_Graph(),
+			graph:           test_data.Gc_5_0_Graph(),
 			expectedResults: [][]uint32{{0, 1, 2}, {0, 2, 3}, {0, 3, 4}},
 		},
 		{
-			graph: mustMakeGraph(`4 6
+			graph: test_data.MustMakeGraph(`4 6
 			0 1
 			0 2
 			0 3

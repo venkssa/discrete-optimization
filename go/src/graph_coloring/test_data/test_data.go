@@ -5,6 +5,7 @@ import (
 	"strings"
 	"os"
 	"graph_coloring/graph"
+	"fmt"
 )
 
 func Gc_4_1_Graph() *graph.G {
@@ -53,7 +54,19 @@ func Gc_20_1_Graph() *graph.G {
 }
 
 func Gc_50_3_Graph() *graph.G {
-	file, err := os.Open("test_data/gc_50_3")
+	return mustMakeGraphFile("gc_50_3")
+}
+
+func Gc_70_7_Graph() *graph.G {
+	return mustMakeGraphFile("gc_70_7")
+}
+
+func Gc_1000_5_Graph() *graph.G {
+	return mustMakeGraphFile("gc_1000_5")
+}
+
+func mustMakeGraphFile(path string) *graph.G {
+	file, err := os.Open(fmt.Sprintf("%s/src/graph_coloring/test_data/%s", os.Getenv("GOPATH"),path))
 	if err != nil {
 		panic(err)
 	}

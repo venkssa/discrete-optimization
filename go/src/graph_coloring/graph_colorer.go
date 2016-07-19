@@ -1,12 +1,15 @@
 package graph_coloring
 
-import "graph_coloring/graph"
+import (
+	"graph_coloring/graph"
+	"graph_coloring/cliques"
+)
 
 func ColorGraph(graph *graph.G, maxColor color) result {
 	constraints := append(buildNotEqualConstraints(graph.NumOfVertices), MaxColor{maxColor: maxColor})
 	constraints = append(constraints, BuildAllDifferentConstraint(graph, maxColor)...)
 
-	clique := NewCliques(FindAllMaximalCliques(graph), graph.NumOfVertices)
+	clique := NewCliques(cliques.FindAllMaximalCliques(graph), graph.NumOfVertices)
 
 	ta := &result{
 		graph:       graph,

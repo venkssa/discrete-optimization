@@ -6,10 +6,10 @@ import (
 )
 
 type Cliques struct {
-	Cliques                [][]uint32
-	NumOfVertices          uint32
-	MinCliqueLen           uint32
-	MaxCliqueLen           uint32
+	Cliques       [][]uint32
+	NumOfVertices uint32
+	MinCliqueLen  uint32
+	MaxCliqueLen  uint32
 
 	vertexFreqPerCliqueLen []map[uint32]uint32
 }
@@ -95,7 +95,6 @@ func OrderVerticesByCliques(c *Cliques) []uint32 {
 	return orderedVertices.vertices
 }
 
-
 type verticesInCliqueLen struct {
 	vertices []uint32
 	counts   map[uint32]uint32
@@ -120,7 +119,6 @@ func newVerticesInCliqueLen(counts map[uint32]uint32) *verticesInCliqueLen {
 	}
 	return &verticesInCliqueLen{vertices: vertices, counts: counts}
 }
-
 
 func OrderVerticesByCliqueLen(c *Cliques) []uint32 {
 	cliqueLenVerticesCount := map[uint32]map[uint32]uint32{}

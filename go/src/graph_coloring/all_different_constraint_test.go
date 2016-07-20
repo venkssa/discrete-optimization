@@ -62,12 +62,11 @@ func TestAlternatingPath_FromFreeVertex(t *testing.T) {
 	}
 }
 
-
 func TestNoAlternatingPath(t *testing.T) {
 	dg := allDifferentGraph{
 		vertexToPossibleColors: map[int32][]color{0: {1, 2}},
 		colorToVertexEdge:      []int32{-1, 1, 2},
-		vk:			NewVisitKeeper(3),
+		vk:                     NewVisitKeeper(3),
 	}
 
 	if len(dg.findAlternatingPath(0)) != 0 {

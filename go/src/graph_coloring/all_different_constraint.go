@@ -1,8 +1,8 @@
 package graph_coloring
 
 import (
-	"graph_coloring/graph"
 	"graph_coloring/cliques"
+	"graph_coloring/graph"
 )
 
 type AllDifferentConstraint struct {

@@ -1,8 +1,8 @@
 package graph_coloring
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 )
 
 func TestCliques_VertexCountPerCliqueLen(t *testing.T) {

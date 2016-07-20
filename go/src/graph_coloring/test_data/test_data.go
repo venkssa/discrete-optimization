@@ -1,11 +1,11 @@
 package test_data
 
 import (
-	"io/ioutil"
-	"strings"
-	"os"
-	"graph_coloring/graph"
 	"fmt"
+	"graph_coloring/graph"
+	"io/ioutil"
+	"os"
+	"strings"
 )
 
 func Gc_4_1_Graph() *graph.G {
@@ -61,12 +61,16 @@ func Gc_70_7_Graph() *graph.G {
 	return mustMakeGraphFile("gc_70_7")
 }
 
+func Gc_100_5_Graph() *graph.G {
+	return mustMakeGraphFile("gc_100_5")
+}
+
 func Gc_1000_5_Graph() *graph.G {
 	return mustMakeGraphFile("gc_1000_5")
 }
 
 func mustMakeGraphFile(path string) *graph.G {
-	file, err := os.Open(fmt.Sprintf("%s/src/graph_coloring/test_data/%s", os.Getenv("GOPATH"),path))
+	file, err := os.Open(fmt.Sprintf("%s/src/graph_coloring/test_data/%s", os.Getenv("GOPATH"), path))
 	if err != nil {
 		panic(err)
 	}

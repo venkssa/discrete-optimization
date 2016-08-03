@@ -1,17 +1,17 @@
 package cliques
 
 func bronKerboschMaximalClique(r []uint32,
-			p *bitSet,
-			x *bitSet,
-			vertexToEdgeBitSet []*bitSet,
+			p *BitSet,
+			x *BitSet,
+			vertexToEdgeBitSet []*BitSet,
 			result [][]uint32) [][]uint32 {
 	if p.IsZero() && x.IsZero() {
 		return append(result, append([]uint32{}, r...))
 	}
 
 	numOfVertices := uint32(len(vertexToEdgeBitSet))
-	pCopy := newBitSet(numOfVertices)
-	xCopy := newBitSet(numOfVertices)
+	pCopy := NewBitSet(numOfVertices)
+	xCopy := NewBitSet(numOfVertices)
 
 	for v := uint32(0); v < numOfVertices; v++ {
 		if !p.IsSet(v) {
@@ -19,8 +19,8 @@ func bronKerboschMaximalClique(r []uint32,
 		}
 
 		neighbors := vertexToEdgeBitSet[v]
-		and(pCopy, neighbors, p)
-		and(xCopy, neighbors, x)
+		And(pCopy, neighbors, p)
+		And(xCopy, neighbors, x)
 
 		result = bronKerboschMaximalClique(append(r, v), pCopy, xCopy, vertexToEdgeBitSet, result)
 

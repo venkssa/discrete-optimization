@@ -5,24 +5,23 @@ import (
 )
 
 func FindAllMaximalCliques(graph *graph.G) [][]uint32 {
-	p := newBitSet(graph.NumOfVertices)
+	p := NewBitSet(graph.NumOfVertices)
 	for idx := uint32(0); idx < graph.NumOfVertices; idx++ {
 		p.Set(idx)
 	}
-	return bronKerboschMaximalClique(make([]uint32, 0, graph.NumOfVertices), p, newBitSet(graph.NumOfVertices),
+	return bronKerboschMaximalClique(make([]uint32, 0, graph.NumOfVertices), p, NewBitSet(graph.NumOfVertices),
 		neighborsBitSet(graph), [][]uint32{})
 }
 
-func neighborsBitSet(graph *graph.G) []*bitSet {
-	vertexToEdgeBitSet := make([]*bitSet, graph.NumOfVertices)
+func neighborsBitSet(graph *graph.G) []*BitSet {
+	neighborsBitSet := make([]*BitSet, graph.NumOfVertices)
 
-	for idx := uint32(0); idx < graph.NumOfVertices; idx++ {
-		bs := newBitSet(graph.NumOfVertices)
-
-		for _, neighbor := range graph.VertexToEdges[int(idx)] {
-			bs.Set(neighbor)
+	for vertexIdx := uint32(0); vertexIdx < graph.NumOfVertices; vertexIdx++ {
+		neighborsBitSet[vertexIdx] = NewBitSet(graph.NumOfVertices)
+		for _, neighborIdx := range graph.Neighbors(vertexIdx) {
+			neighborsBitSet[vertexIdx].Set(neighborIdx)
 		}
-		vertexToEdgeBitSet[idx] = bs
 	}
-	return vertexToEdgeBitSet
+
+	return neighborsBitSet
 }

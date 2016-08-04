@@ -1,9 +1,5 @@
 package cliques
 
-import (
-	"math"
-)
-
 const bitsPerWord = 64
 
 type block uint64

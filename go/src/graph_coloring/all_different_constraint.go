@@ -59,11 +59,11 @@ func (adc *AllDifferentConstraint) Prune(graph *graph.G, domainStore *DomainStor
 }
 
 func BuildAllDifferentConstraint(graph *graph.G, maxColor color) []Constraint {
-	cliques := cliques.FindAllMaximalCliques(graph)
+	cliques := cliques.BronKerbosch().FindAllMaximalCliques(graph)
 
 	constraints := []Constraint{}
 
-	for _, clique := range cliques {
+	for _, clique := range cliques.Cliques {
 		if len(clique) > 2 {
 			constraints = append(constraints,
 				&AllDifferentConstraint{clique, maxColor, nil})

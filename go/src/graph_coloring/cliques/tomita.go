@@ -1,14 +1,14 @@
 package cliques
 
-import "graph_coloring/graph"
+import (
+	"graph_coloring/graph"
+)
 
-type bronKerboschAlgo struct{}
+// Similar to BK except choose u P U X highest number of neigh in  P
+// v in P \ N(u)
+type TomitaAlgo struct{}
 
-func BronKerbosch() MaximalCliqueFinder {
-	return bronKerboschAlgo{}
-}
-
-func (bk bronKerboschAlgo) FindAllMaximalCliques(graph *graph.G) Cliques {
+func (ta TomitaAlgo) FindAllMaximalCliques(graph *graph.G) Cliques {
 	p := NewBitSet(graph.NumOfVertices)
 	for idx := uint32(0); idx < graph.NumOfVertices; idx++ {
 		p.Set(idx)
@@ -21,7 +21,7 @@ func (bk bronKerboschAlgo) FindAllMaximalCliques(graph *graph.G) Cliques {
 		&Cliques{Cliques: []Clique{}, NumOfVertices: graph.NumOfVertices})
 }
 
-func bronKerboschMaximalClique(r Clique,
+func tomitaMaximalClique(r Clique,
 	p *BitSet,
 	x *BitSet,
 	vertexToEdgeBitSet []*BitSet,

@@ -10,6 +10,6 @@ func BenchmarkFindAllMaximalCliques(b *testing.B) {
 	b.ResetTimer()
 	b.ReportAllocs()
 	for idx := 0; idx < b.N; idx++ {
-		FindAllMaximalCliques(graph)
+		BronKerbosch().FindAllMaximalCliques(graph)
 	}
 }

@@ -3,22 +3,22 @@ package graph_coloring
 import (
 	"math"
 	"sort"
+	"graph_coloring/cliques"
 )
 
 type Cliques struct {
-	Cliques       [][]uint32
-	NumOfVertices uint32
+	cliques.Cliques
 	MinCliqueLen  uint32
 	MaxCliqueLen  uint32
 
 	vertexFreqPerCliqueLen []map[uint32]uint32
 }
 
-func NewCliques(cliques [][]uint32, numOfVertices uint32) *Cliques {
+func NewCliques(cliques cliques.Cliques) *Cliques {
 	minCliqueLen := uint32(math.MaxUint32)
 	maxCliqueLen := uint32(0)
 
-	for _, clique := range cliques {
+	for _, clique := range cliques.Cliques {
 		length := uint32(len(clique))
 		if minCliqueLen > length {
 			minCliqueLen = length
@@ -30,11 +30,10 @@ func NewCliques(cliques [][]uint32, numOfVertices uint32) *Cliques {
 
 	return &Cliques{
 		Cliques:       cliques,
-		NumOfVertices: numOfVertices,
 		MinCliqueLen:  minCliqueLen,
 		MaxCliqueLen:  maxCliqueLen,
 
-		vertexFreqPerCliqueLen: computeOccurrencesForAllVertices(numOfVertices, cliques),
+		vertexFreqPerCliqueLen: computeOccurrencesForAllVertices(cliques.NumOfVertices, cliques),
 	}
 }
 
@@ -42,14 +41,14 @@ func (c *Cliques) Occurrences(vertexIdx uint32, cliqueLen uint32) uint32 {
 	return c.vertexFreqPerCliqueLen[vertexIdx][cliqueLen]
 }
 
-func computeOccurrencesForAllVertices(numOfVertices uint32, cliques [][]uint32) []map[uint32]uint32 {
+func computeOccurrencesForAllVertices(numOfVertices uint32, cliques cliques.Cliques) []map[uint32]uint32 {
 	occurrences := make([]map[uint32]uint32, numOfVertices)
 
 	for vertexIdx := uint32(0); vertexIdx < numOfVertices; vertexIdx++ {
 		occurrences[vertexIdx] = map[uint32]uint32{}
 	}
 
-	for _, clique := range cliques {
+	for _, clique := range cliques.Cliques {
 		length := uint32(len(clique))
 		for _, vertex := range clique {
 			occurrences[vertex][length]++
@@ -123,14 +122,14 @@ func newVerticesInCliqueLen(counts map[uint32]uint32) *verticesInCliqueLen {
 func OrderVerticesByCliqueLen(c *Cliques) []uint32 {
 	cliqueLenVerticesCount := map[uint32]map[uint32]uint32{}
 
-	for _, clique := range c.Cliques {
+	for _, clique := range c.Cliques.Cliques {
 		cliqueLen := uint32(len(clique))
 		if _, ok := cliqueLenVerticesCount[cliqueLen]; !ok {
 			cliqueLenVerticesCount[cliqueLen] = map[uint32]uint32{}
 		}
 	}
 
-	for _, clique := range c.Cliques {
+	for _, clique := range c.Cliques.Cliques {
 		cliqueLen := uint32(len(clique))
 		for _, vertex := range clique {
 			cliqueLenVerticesCount[cliqueLen][vertex]++

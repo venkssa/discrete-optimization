@@ -10,15 +10,15 @@ import (
 func TestFindAllMaximalCliques(t *testing.T) {
 	tests := []struct {
 		graph           *graph.G
-		expectedResults [][]uint32
+		expectedResults []Clique
 	}{
 		{
 			graph:           test_data.Gc_4_1_Graph(),
-			expectedResults: [][]uint32{{0, 1}, {1, 2}, {1, 3}},
+			expectedResults: []Clique{{0, 1}, {1, 2}, {1, 3}},
 		},
 		{
 			graph:           test_data.Gc_5_0_Graph(),
-			expectedResults: [][]uint32{{0, 1, 2}, {0, 2, 3}, {0, 3, 4}},
+			expectedResults: []Clique{{0, 1, 2}, {0, 2, 3}, {0, 3, 4}},
 		},
 		{
 			graph: test_data.MustMakeGraph(`4 6
@@ -28,18 +28,23 @@ func TestFindAllMaximalCliques(t *testing.T) {
 			1 2
 			1 3
 			2 3`),
-			expectedResults: [][]uint32{{0, 1, 2, 3}},
+			expectedResults: []Clique{{0, 1, 2, 3}},
 		},
 	}
 
 	for _, test := range tests {
-		cliques := FindAllMaximalCliques(test.graph)
+		cliques := BronKerbosch().FindAllMaximalCliques(test.graph)
 
-		verifyCliques(t, cliques, test.expectedResults)
+		verifyCliques(t, cliques.Cliques, test.expectedResults)
+
+		if cliques.NumOfVertices != test.graph.NumOfVertices {
+			t.Errorf("Expected number of vertices to be %v but was %v", test.graph.NumOfVertices,
+				cliques.NumOfVertices)
+		}
 	}
 }
 
-func verifyCliques(t *testing.T, actualResults [][]uint32, expectedResults [][]uint32) {
+func verifyCliques(t *testing.T, actualResults []Clique, expectedResults []Clique) {
 	for idx := 0; idx < len(expectedResults); idx++ {
 		matches := false
 		for jdx := 0; jdx < len(actualResults); jdx++ {
@@ -59,7 +64,7 @@ func verifyCliques(t *testing.T, actualResults [][]uint32, expectedResults [][]u
 	}
 }
 
-func verifyClique(actualResult []uint32, expectedResult []uint32) bool {
+func verifyClique(actualResult Clique, expectedResult []uint32) bool {
 	matches := true
 
 	sortedActualResult := make(sortedResult, len(actualResult))

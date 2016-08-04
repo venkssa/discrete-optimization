@@ -4,13 +4,23 @@ import (
 	"graph_coloring/graph"
 )
 
-func FindAllMaximalCliques(graph *graph.G) [][]uint32 {
-	p := NewBitSet(graph.NumOfVertices)
-	for idx := uint32(0); idx < graph.NumOfVertices; idx++ {
-		p.Set(idx)
-	}
-	return bronKerboschMaximalClique(make([]uint32, 0, graph.NumOfVertices), p, NewBitSet(graph.NumOfVertices),
-		neighborsBitSet(graph), [][]uint32{})
+type Clique []uint32
+
+func (c Clique) Clone() Clique {
+	return append(Clique{}, c...)
+}
+
+type Cliques struct {
+	Cliques       []Clique
+	NumOfVertices uint32
+}
+
+func (cls *Cliques) Add(c Clique) {
+	cls.Cliques = append(cls.Cliques, c)
+}
+
+type MaximalCliqueFinder interface {
+	FindAllMaximalCliques(graph *graph.G) Cliques
 }
 
 func neighborsBitSet(graph *graph.G) []*BitSet {

@@ -1,10 +1,9 @@
 package cliques
 
 import (
-	"testing"
-	"graph_coloring/test_data"
 	"graph_coloring/graph"
-	"reflect"
+	"graph_coloring/test_data"
+	"testing"
 )
 
 func TestTomitaAlgo_FindAllMaximalCliques(t *testing.T) {
@@ -36,31 +35,47 @@ func TestTomitaAlgo_FindAllMaximalCliques(t *testing.T) {
 
 	for _, test := range tests {
 		cliques := tomita.FindAllMaximalCliques(test.graph)
-		if !reflect.DeepEqual(cliques.Cliques, test.expectedResults) {
-			t.Errorf("Expected %v but found %v", test.expectedResults, cliques.Cliques)
-		}
+		verifyCliques(t, cliques.Cliques, test.expectedResults)
 	}
 }
 
-func TestNumberOfNeighbors(t *testing.T) {
-	graph := test_data.MustMakeGraph(`4 5
-	0 1
-	0 2
-	0 3
-	1 3
-	2 3`)
-
-	actualNeighbors := neighborsBitSet(graph)
-
-	expectedNeighbors := []*BitSet{
-		stringToBitSet("0111"),
-		stringToBitSet("1001"),
-		stringToBitSet("1001"),
-		stringToBitSet("1110"),
+func TestFindPivot(t *testing.T) {
+	tests := []struct {
+		candidate      *BitSet
+		finished       *BitSet
+		expectedMaxIdx uint32
+	}{
+		{
+			candidate:      stringToBitSet("1111"),
+			finished:       stringToBitSet("0000"),
+			expectedMaxIdx: uint32(0),
+		},
+		{
+			candidate:      stringToBitSet("0000"),
+			finished:       stringToBitSet("1111"),
+			expectedMaxIdx: uint32(0),
+		},
+		{
+			candidate:      stringToBitSet("0010"),
+			finished:       stringToBitSet("0100"),
+			expectedMaxIdx: uint32(1),
+		},
 	}
 
-	if !reflect.DeepEqual(actualNeighbors, expectedNeighbors) {
-		t.Errorf("Expected %v as neighbors but found %v", expectedNeighbors, actualNeighbors)
+	neigbhors := []*BitSet{
+		stringToBitSet("0111"),
+		stringToBitSet("1010"),
+		stringToBitSet("1100"),
+		stringToBitSet("1000"),
+	}
+
+	for _, test := range tests {
+		actualMaxIdx := findPivot(test.candidate, test.finished, neigbhors)
+
+		if actualMaxIdx != test.expectedMaxIdx {
+			t.Errorf("Expected %v as pivot for candidate %v, finished %v, neighbors %v but was %v",
+				test.expectedMaxIdx, test.candidate, test.finished, neigbhors, actualMaxIdx)
+		}
 	}
 }
 
@@ -72,15 +87,4 @@ func stringToBitSet(str string) *BitSet {
 		}
 	}
 	return bs
-}
-
-func BenchmarkTomita_FindAllMaximalCliques(b *testing.B) {
-	graph := test_data.Gc_70_7_Graph()
-	b.ResetTimer()
-	b.ReportAllocs()
-
-	tomitaAlgo := TomitaAlgo{}
-	for idx := 0; idx < b.N; idx++ {
-		tomitaAlgo.FindAllMaximalCliques(graph)
-	}
 }

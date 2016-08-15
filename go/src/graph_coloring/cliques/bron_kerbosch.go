@@ -8,13 +8,13 @@ func BronKerbosch() MaximalCliqueFinder {
 	return bronKerboschAlgo{}
 }
 
-func (bk bronKerboschAlgo) FindAllMaximalCliques(graph *graph.G) Cliques {
+func (bk bronKerboschAlgo) FindAllMaximalCliques(graph *graph.G) *Cliques {
 	p := NewBitSet(graph.NumOfVertices)
 	for idx := uint32(0); idx < graph.NumOfVertices; idx++ {
 		p.Set(idx)
 	}
 
-	return *tomitaMaximalClique(make(Clique, 0, graph.NumOfVertices),
+	return bronKerboschMaximalClique(make(Clique, 0, graph.NumOfVertices),
 		p,
 		NewBitSet(graph.NumOfVertices),
 		neighborsBitSet(graph),
@@ -42,10 +42,10 @@ func bronKerboschMaximalClique(r Clique,
 		}
 
 		neighbors := vertexToEdgeBitSet[v]
-		And(pCopy, neighbors, p)
-		And(xCopy, neighbors, x)
+		Intersection(pCopy, neighbors, p)
+		Intersection(xCopy, neighbors, x)
 
-		tomitaMaximalClique(append(r, v), pCopy, xCopy, vertexToEdgeBitSet, result)
+		bronKerboschMaximalClique(append(r, v), pCopy, xCopy, vertexToEdgeBitSet, result)
 
 		p.UnSet(v)
 		x.Set(v)

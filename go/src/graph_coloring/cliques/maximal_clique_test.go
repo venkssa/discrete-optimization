@@ -1,46 +1,31 @@
 package cliques
 
 import (
-	"graph_coloring/graph"
-	"graph_coloring/test_data"
 	"sort"
 	"testing"
+	"graph_coloring/test_data"
+	"reflect"
 )
 
-func TestFindAllMaximalCliques(t *testing.T) {
-	tests := []struct {
-		graph           *graph.G
-		expectedResults []Clique
-	}{
-		{
-			graph:           test_data.Gc_4_1_Graph(),
-			expectedResults: []Clique{{0, 1}, {1, 2}, {1, 3}},
-		},
-		{
-			graph:           test_data.Gc_5_0_Graph(),
-			expectedResults: []Clique{{0, 1, 2}, {0, 2, 3}, {0, 3, 4}},
-		},
-		{
-			graph: test_data.MustMakeGraph(`4 6
-			0 1
-			0 2
-			0 3
-			1 2
-			1 3
-			2 3`),
-			expectedResults: []Clique{{0, 1, 2, 3}},
-		},
+func TestNumberOfNeighbors(t *testing.T) {
+	graph := test_data.MustMakeGraph(`4 5
+	0 1
+	0 2
+	0 3
+	1 3
+	2 3`)
+
+	actualNeighbors := neighborsBitSet(graph)
+
+	expectedNeighbors := []*BitSet{
+		stringToBitSet("0111"),
+		stringToBitSet("1001"),
+		stringToBitSet("1001"),
+		stringToBitSet("1110"),
 	}
 
-	for _, test := range tests {
-		cliques := BronKerbosch().FindAllMaximalCliques(test.graph)
-
-		verifyCliques(t, cliques.Cliques, test.expectedResults)
-
-		if cliques.NumOfVertices != test.graph.NumOfVertices {
-			t.Errorf("Expected number of vertices to be %v but was %v", test.graph.NumOfVertices,
-				cliques.NumOfVertices)
-		}
+	if !reflect.DeepEqual(actualNeighbors, expectedNeighbors) {
+		t.Errorf("Expected %v as neighbors but found %v", expectedNeighbors, actualNeighbors)
 	}
 }
 
@@ -64,7 +49,7 @@ func verifyCliques(t *testing.T, actualResults []Clique, expectedResults []Cliqu
 	}
 }
 
-func verifyClique(actualResult Clique, expectedResult []uint32) bool {
+func verifyClique(actualResult Clique, expectedResult Clique) bool {
 	matches := true
 
 	sortedActualResult := make(sortedResult, len(actualResult))

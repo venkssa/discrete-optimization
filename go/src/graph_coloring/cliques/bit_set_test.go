@@ -24,9 +24,17 @@ func TestBitSet_UnSet(t *testing.T) {
 	}
 }
 
+func TestBitSet_NumOfBitsSet(t *testing.T) {
+	bs := bitsetForTest(3, 0, 2)
+
+	if numbersOfBitsSet := bs.NumOfBitsSet(); numbersOfBitsSet != 2 {
+		t.Errorf("Expected number of bits to be set = 2 but was %v", numbersOfBitsSet)
+	}
+}
+
 func TestBitSet_IsZero(t *testing.T) {
-	tests := []struct{
-		input *BitSet
+	tests := []struct {
+		input    *BitSet
 		expected bool
 	}{
 		{
@@ -56,15 +64,78 @@ func TestBitSet_String(t *testing.T) {
 	}
 }
 
-func TestBitSet_And(t *testing.T) {
+func TestBitSet_Intersection(t *testing.T) {
 	first := bitsetForTest(3, 0, 2)
 	second := bitsetForTest(3, 0)
 
-	result := NewBitSet(3)
-	And(result, first, second)
+	resultIntersectionFn := NewBitSet(3)
+	Intersection(resultIntersectionFn, first, second)
 
-	if result.String() != "100" {
-		t.Errorf("Expected %v AND %v to be 100 but was %v", first, second, result)
+	if resultIntersectionFn.String() != "100" {
+		t.Errorf("Expected %v AND %v to be 100 but was %v", first, second, resultIntersectionFn)
+	}
+
+	resultIntersectionMethod := first.Intersection(second)
+
+	if resultIntersectionMethod.String() != "100" {
+		t.Errorf("Expected %v AND %v to be 100 but was %v", first, second, resultIntersectionMethod)
+	}
+}
+
+func TestBitSet_Minus(t *testing.T) {
+	tests := []struct {
+		first    *BitSet
+		second   *BitSet
+		expected *BitSet
+	}{
+		{
+			first:    bitsetForTest(3, 0, 1, 2),
+			second:   bitsetForTest(3, 1),
+			expected: bitsetForTest(3, 0, 2),
+		},
+		{
+			first:    bitsetForTest(4, 2, 3),
+			second:   bitsetForTest(4, 1),
+			expected: bitsetForTest(4, 2, 3),
+		},
+	}
+
+	for _, test := range tests {
+		resultMinusFn := NewBitSet(test.first.numOfElements)
+
+		Minus(resultMinusFn, test.first, test.second)
+
+		if resultMinusFn.String() != test.expected.String() {
+			t.Errorf("Expected %v - %v to be %v but was %v",
+				test.first, test.second, test.expected, resultMinusFn)
+		}
+
+		resultMinusMethod := test.first.Minus(test.second)
+
+		if resultMinusMethod.String() != test.expected.String() {
+			t.Errorf("Expected %v - %v to be %v but was %v",
+				test.first, test.second, test.expected, resultMinusMethod)
+		}
+
+	}
+}
+
+func TestBitSet_Union(t *testing.T) {
+	first := bitsetForTest(3, 1)
+	second := bitsetForTest(3, 0, 2)
+
+	resultUnionFn := NewBitSet(3)
+
+	Union(resultUnionFn, first, second)
+
+	if resultUnionFn.String() != "111" {
+		t.Errorf("Expected %v U %v to be 111 but was %v", first, second, resultUnionFn)
+	}
+
+	resultUnionMethod := first.Union(second)
+
+	if resultUnionMethod.String() != "111" {
+		t.Errorf("Expected %v U %v to be 111 but was %v", first, second, resultUnionMethod)
 	}
 }
 
@@ -87,7 +158,22 @@ func BenchmarkBitSet(b *testing.B) {
 
 	for idx := 0; idx < b.N; idx++ {
 		result := NewBitSet(1000)
-		And(result, neighbors, p)
+		Intersection(result, neighbors, p)
+		v := uint32(idx % 500)
+		p.UnSet(v)
+		p.Set(v)
+	}
+}
+
+func BenchmarkBitSet_(b *testing.B) {
+	neighbors := NewBitSet(1000)
+	p := NewBitSet(1000)
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	for idx := 0; idx < b.N; idx++ {
+		neighbors.Intersection(p)
 		v := uint32(idx % 500)
 		p.UnSet(v)
 		p.Set(v)

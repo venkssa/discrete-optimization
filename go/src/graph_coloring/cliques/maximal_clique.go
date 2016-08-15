@@ -20,7 +20,7 @@ func (cls *Cliques) Add(c Clique) {
 }
 
 type MaximalCliqueFinder interface {
-	FindAllMaximalCliques(graph *graph.G) Cliques
+	FindAllMaximalCliques(graph *graph.G) *Cliques
 }
 
 func neighborsBitSet(graph *graph.G) []*BitSet {

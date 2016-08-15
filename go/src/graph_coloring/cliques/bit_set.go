@@ -17,6 +17,20 @@ func NewBitSet(numOfElements uint32) *BitSet {
 	return &BitSet{blocks: make([]block, size), numOfElements: numOfElements}
 }
 
+func (bs *BitSet) Len() uint32 {
+	return bs.numOfElements
+}
+
+func (bs *BitSet) NumOfBitsSet() uint32 {
+	var count uint32
+	for jdx := uint32(0); jdx < bs.Len(); jdx++ {
+		if bs.IsSet(jdx) {
+			count++
+		}
+	}
+	return count
+}
+
 func (bs *BitSet) Set(idx uint32) {
 	bs.blocks[idx/bitsPerWord] |= 1 << (idx % bitsPerWord)
 }
@@ -50,8 +64,38 @@ func (bs *BitSet) String() string {
 	return string(bitSetAsRune)
 }
 
-func And(result *BitSet, first *BitSet, second *BitSet) {
+func (bs *BitSet) Minus(second *BitSet) *BitSet {
+	result := NewBitSet(bs.Len())
+	Minus(result, bs, second)
+	return result
+}
+
+func (bs *BitSet) Union(second *BitSet) *BitSet {
+	result := NewBitSet(bs.Len())
+	Union(result, bs, second)
+	return result
+}
+
+func (bs *BitSet) Intersection(second *BitSet) *BitSet {
+	result := NewBitSet(bs.Len())
+	Intersection(result, bs, second)
+	return result
+}
+
+func Intersection(result *BitSet, first *BitSet, second *BitSet) {
 	for idx := 0; idx < len(result.blocks); idx++ {
 		result.blocks[idx] = first.blocks[idx] & second.blocks[idx]
+	}
+}
+
+func Minus(result *BitSet, first *BitSet, second *BitSet) {
+	for idx := 0; idx < len(result.blocks); idx++ {
+		result.blocks[idx] = first.blocks[idx] & (first.blocks[idx] ^ second.blocks[idx])
+	}
+}
+
+func Union(result *BitSet, first *BitSet, second *BitSet) {
+	for idx := 0; idx < len(result.blocks); idx++ {
+		result.blocks[idx] = first.blocks[idx] | second.blocks[idx]
 	}
 }

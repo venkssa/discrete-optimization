@@ -9,7 +9,7 @@ func ColorGraph(graph *graph.G, maxColor color) result {
 	constraints := append(buildNotEqualConstraints(graph.NumOfVertices), MaxColor{maxColor: maxColor})
 	constraints = append(constraints, BuildAllDifferentConstraint(graph, maxColor)...)
 
-	clique := NewCliques(cliques.BronKerbosch().FindAllMaximalCliques(graph))
+	clique := NewCliques(*cliques.BronKerbosch().FindAllMaximalCliques(graph))
 
 	ta := &result{
 		graph:       graph,

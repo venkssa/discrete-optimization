@@ -16,11 +16,14 @@ func (ta TomitaAlgo) FindAllMaximalCliques(graph *graph.G) *Cliques {
 		candidates.Set(idx)
 	}
 
+	neighbors := neighborsBitSet(graph)
+
 	return tomitaMaximalClique(
 		make(Clique, 0, graph.NumOfVertices),
 		candidates,
 		NewBitSet(graph.NumOfVertices),
-		neighborsBitSet(graph),
+		neighbors,
+		newPivotFinder(neighbors),
 		&Cliques{Cliques: []Clique{}, NumOfVertices: graph.NumOfVertices})
 }
 
@@ -29,6 +32,7 @@ func tomitaMaximalClique(
 	candidate *BitSet,
 	finished *BitSet,
 	allNeighbors []*BitSet,
+        pivotFinder *pivotFinder,
 	result *Cliques) *Cliques {
 
 	if candidate.IsZero() && finished.IsZero() {
@@ -36,7 +40,7 @@ func tomitaMaximalClique(
 		return result
 	}
 
-	pivot := findPivot(candidate, finished, allNeighbors)
+	pivot := pivotFinder.find(candidate, finished)
 
 	candidateMinusPivotNeighbor := candidate.Minus(allNeighbors[pivot])
 
@@ -52,7 +56,7 @@ func tomitaMaximalClique(
 		Intersection(candidateCopy, neighbors, candidate)
 		Intersection(finishedCopy, neighbors, finished)
 
-		tomitaMaximalClique(append(r, v), candidateCopy, finishedCopy, allNeighbors, result)
+		tomitaMaximalClique(append(r, v), candidateCopy, finishedCopy, allNeighbors, pivotFinder, result)
 
 		candidate.UnSet(v)
 		finished.Set(v)
@@ -60,20 +64,32 @@ func tomitaMaximalClique(
 	return result
 }
 
-func findPivot(candidate *BitSet, finished *BitSet, neighbors []*BitSet) uint32 {
-	subg := candidate.Union(finished)
+type pivotFinder struct {
+	neighbors              []*BitSet
+	subg                   *BitSet
+	candidateMinusNeighbor *BitSet
+}
 
-	intersection := NewBitSet(subg.Len())
+func newPivotFinder(neighbors []*BitSet) *pivotFinder {
+	return &pivotFinder{
+		neighbors: neighbors,
+		subg:  NewBitSet(uint32(len(neighbors))),
+		candidateMinusNeighbor:  NewBitSet(uint32(len(neighbors))),
+	}
+}
+
+func (pf *pivotFinder) find(candidate *BitSet, finished *BitSet) uint32 {
+	Union(pf.subg, candidate, finished)
 
 	var maxVertexIdx uint32
 	var maxCount uint32
 
-	for idx := uint32(0); idx < subg.Len(); idx++ {
-		if !subg.IsSet(idx) {
+	for idx := uint32(0); idx < pf.subg.Len(); idx++ {
+		if !pf.subg.IsSet(idx) {
 			continue
 		}
 
-		Intersection(intersection, candidate, neighbors[idx])
+		Intersection(pf.candidateMinusNeighbor, candidate, pf.neighbors[idx])
 
 		count := candidate.NumOfBitsSet()
 

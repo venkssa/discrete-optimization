@@ -69,8 +69,10 @@ func TestFindPivot(t *testing.T) {
 		stringToBitSet("1000"),
 	}
 
+	pf := newPivotFinder(neigbhors)
+
 	for _, test := range tests {
-		actualMaxIdx := findPivot(test.candidate, test.finished, neigbhors)
+		actualMaxIdx := pf.find(test.candidate, test.finished)
 
 		if actualMaxIdx != test.expectedMaxIdx {
 			t.Errorf("Expected %v as pivot for candidate %v, finished %v, neighbors %v but was %v",

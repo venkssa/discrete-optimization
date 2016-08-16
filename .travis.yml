@@ -1,8 +1,12 @@
 language: go
 
-go: 
- - release
- 
+go:
+ - 1.6.2
+
+env:
+  global:
+    - GOPATH=$GOPATH/go
+
 script:
- - go test -v ./... -bench="^Benchmark*"
- 
+  - cd $GOPATH
+  - go test -v ./... -bench="^Benchmark*"

@@ -1,22 +1,26 @@
 package knapsack
 
 import (
-	"bufio"
+	"common"
 	"fmt"
 	"io"
 	"sort"
-	"strconv"
-	"strings"
 )
 
 type Item struct {
-	Idx    uint32
-	Weight uint32
-	Value  uint32
+	Idx                uint32
+	Weight             uint32
+	Value              uint32
+	ValuePerUnitWeight float64
 }
 
-func (item Item) ValuePerUnitWeight() float64 {
-	return float64(item.Value) / float64(item.Weight)
+func NewItem(idx uint32, value uint32, weight uint32) Item {
+	return Item{
+		Idx:                idx,
+		Value:              value,
+		Weight:             weight,
+		ValuePerUnitWeight: float64(value) / float64(weight),
+	}
 }
 
 type Items []Item
@@ -26,7 +30,7 @@ func (items Items) Len() int {
 }
 
 func (items Items) Less(i, j int) bool {
-	return items[i].ValuePerUnitWeight() > items[j].ValuePerUnitWeight()
+	return items[i].ValuePerUnitWeight > items[j].ValuePerUnitWeight
 }
 
 func (items Items) Swap(i, j int) {
@@ -38,51 +42,28 @@ type Knapsack struct {
 	Items    Items
 }
 
-func NewKnapsack(reader io.ReadCloser) (Knapsack, error) {
-	defer reader.Close()
+func NewKnapsack(rc io.ReadCloser) (Knapsack, error) {
+	var numberOfItems uint32
+	knapsack := Knapsack{}
 
-	scanner := bufio.NewScanner(reader)
-	if !scanner.Scan() {
-		return Knapsack{}, scanner.Err()
-	}
+	err := common.Parse(rc, func(line common.LineNum, d1 uint32, d2 uint32) {
+		if line == 1 {
+			numberOfItems = d1
+			knapsack.Capacity = d2
+		} else {
+			knapsack.Items = append(knapsack.Items, NewItem(uint32(line)-2, d1, d2))
+		}
+	})
 
-	numberOfItems, capacity, err := splitAndConvertToInt(scanner.Text())
 	if err != nil {
-		return Knapsack{}, err
-	}
-
-	knapsack := Knapsack{Capacity: capacity, Items: Items([]Item{})}
-	for idx := uint32(0); idx < numberOfItems; idx++ {
-		if !scanner.Scan() {
-			break
-		}
-		value, weight, err := splitAndConvertToInt(scanner.Text())
-		if err != nil {
-			return knapsack, err
-		}
-		knapsack.Items = append(knapsack.Items, Item{Idx: idx, Value: value, Weight: weight})
+		return knapsack, err
 	}
 
 	if uint32(len(knapsack.Items)) != numberOfItems {
 		return knapsack, fmt.Errorf("Expected %d items but only got %d", numberOfItems, len(knapsack.Items))
 	}
+
 	sort.Sort(knapsack.Items)
 
-	return knapsack, scanner.Err()
-}
-
-func splitAndConvertToInt(s string) (uint32, uint32, error) {
-	splitStrings := strings.Split(strings.TrimSpace(s), " ")
-	if len(splitStrings) != 2 {
-		return 0, 0, fmt.Errorf("Line should contain 2 numbers; but was instead %s", splitStrings)
-	}
-	first, err := strconv.ParseUint(splitStrings[0], 10, 32)
-	if err != nil {
-		return 0, 0, err
-	}
-	second, err := strconv.ParseUint(splitStrings[1], 10, 32)
-	if err != nil {
-		return 0, 0, err
-	}
-	return uint32(first), uint32(second), nil
+	return knapsack, err
 }

@@ -1,8 +1,9 @@
 package graph_coloring
 
 import (
-	"testing"
 	"reflect"
+	"testing"
+	"graph_coloring/cliques"
 )
 
 func TestCliques_VertexCountPerCliqueLen(t *testing.T) {
@@ -12,8 +13,7 @@ func TestCliques_VertexCountPerCliqueLen(t *testing.T) {
 	}{
 		{
 			cliques: NewCliques(
-				[][]uint32{{0, 1, 2}, {0, 2, 3}, {3, 4}},
-				5,
+				cliques.Cliques{[]cliques.Clique{{0, 1, 2}, {0, 2, 3}, {3, 4}}, 5},
 			),
 			expected: []map[uint32]uint32{
 				{3: 2},
@@ -25,8 +25,7 @@ func TestCliques_VertexCountPerCliqueLen(t *testing.T) {
 		},
 		{
 			cliques: NewCliques(
-				[][]uint32{},
-				3,
+				cliques.Cliques{[]cliques.Clique{}, 3},
 			),
 			expected: []map[uint32]uint32{{}, {}, {}},
 		},
@@ -47,8 +46,7 @@ func TestCliques_VertexCountPerCliqueLen(t *testing.T) {
 }
 
 func TestOrderVertexForSearch(t *testing.T) {
-	cliques := NewCliques([][]uint32{{0, 1, 2}, {0, 2, 3}, {3, 4}},
-		5)
+	cliques := NewCliques(cliques.Cliques{[]cliques.Clique{{0, 1, 2}, {0, 2, 3}, {3, 4}}, 5})
 
 	actualOrder := OrderVerticesByCliques(cliques)
 

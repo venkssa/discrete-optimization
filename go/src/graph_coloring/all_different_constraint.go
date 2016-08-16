@@ -1,6 +1,9 @@
 package graph_coloring
 
-import "graph_coloring/graph"
+import (
+	"graph_coloring/cliques"
+	"graph_coloring/graph"
+)
 
 type AllDifferentConstraint struct {
 	vertices []uint32
@@ -56,11 +59,11 @@ func (adc *AllDifferentConstraint) Prune(graph *graph.G, domainStore *DomainStor
 }
 
 func BuildAllDifferentConstraint(graph *graph.G, maxColor color) []Constraint {
-	cliques := FindAllMaximalCliques(graph)
+	cliques := cliques.BronKerbosch().FindAllMaximalCliques(graph)
 
 	constraints := []Constraint{}
 
-	for _, clique := range cliques {
+	for _, clique := range cliques.Cliques {
 		if len(clique) > 2 {
 			constraints = append(constraints,
 				&AllDifferentConstraint{clique, maxColor, nil})

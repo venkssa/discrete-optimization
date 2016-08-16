@@ -1,9 +1,9 @@
 package graph_coloring
 
 import (
-	"testing"
 	"graph_coloring/graph"
 	"graph_coloring/test_data"
+	"testing"
 )
 
 func TestNotEqual_IsFeasible(t *testing.T) {

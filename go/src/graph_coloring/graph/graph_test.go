@@ -1,9 +1,9 @@
 package graph
 
 import (
-	"testing"
 	"io/ioutil"
 	"strings"
+	"testing"
 )
 
 func TestNewGraph(t *testing.T) {

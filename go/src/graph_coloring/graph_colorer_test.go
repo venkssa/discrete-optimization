@@ -1,8 +1,8 @@
 package graph_coloring
 
 import (
-	"testing"
 	"graph_coloring/test_data"
+	"testing"
 )
 
 func TestColorGraph(t *testing.T) {

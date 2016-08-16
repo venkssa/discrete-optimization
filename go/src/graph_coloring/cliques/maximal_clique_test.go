@@ -1,57 +1,35 @@
-package graph_coloring
+package cliques
 
 import (
 	"sort"
 	"testing"
-	"graph_coloring/graph"
 	"graph_coloring/test_data"
+	"reflect"
 )
 
-func Test50Graph(t *testing.T) {
-	cliques := FindAllMaximalCliques(test_data.Gc_50_3_Graph())
+func TestNumberOfNeighbors(t *testing.T) {
+	graph := test_data.MustMakeGraph(`4 5
+	0 1
+	0 2
+	0 3
+	1 3
+	2 3`)
 
-	stats := map[int]int{}
+	actualNeighbors := neighborsBitSet(graph)
 
-	for _, clique := range cliques {
-		stats[len(clique)] += 1
+	expectedNeighbors := []*BitSet{
+		stringToBitSet("0111"),
+		stringToBitSet("1001"),
+		stringToBitSet("1001"),
+		stringToBitSet("1110"),
 	}
 
-	t.Log(stats)
-}
-
-func TestFindAllMaximalCliques(t *testing.T) {
-	tests := []struct {
-		graph           *graph.G
-		expectedResults [][]uint32
-	}{
-		{
-			graph:           test_data.Gc_4_1_Graph(),
-			expectedResults: [][]uint32{{0, 1}, {1, 2}, {1, 3}},
-		},
-		{
-			graph:           test_data.Gc_5_0_Graph(),
-			expectedResults: [][]uint32{{0, 1, 2}, {0, 2, 3}, {0, 3, 4}},
-		},
-		{
-			graph: test_data.MustMakeGraph(`4 6
-			0 1
-			0 2
-			0 3
-			1 2
-			1 3
-			2 3`),
-			expectedResults: [][]uint32{{0, 1, 2, 3}},
-		},
-	}
-
-	for _, test := range tests {
-		cliques := FindAllMaximalCliques(test.graph)
-
-		verifyCliques(t, cliques, test.expectedResults)
+	if !reflect.DeepEqual(actualNeighbors, expectedNeighbors) {
+		t.Errorf("Expected %v as neighbors but found %v", expectedNeighbors, actualNeighbors)
 	}
 }
 
-func verifyCliques(t *testing.T, actualResults [][]uint32, expectedResults [][]uint32) {
+func verifyCliques(t *testing.T, actualResults []Clique, expectedResults []Clique) {
 	for idx := 0; idx < len(expectedResults); idx++ {
 		matches := false
 		for jdx := 0; jdx < len(actualResults); jdx++ {
@@ -71,7 +49,7 @@ func verifyCliques(t *testing.T, actualResults [][]uint32, expectedResults [][]u
 	}
 }
 
-func verifyClique(actualResult []uint32, expectedResult []uint32) bool {
+func verifyClique(actualResult Clique, expectedResult Clique) bool {
 	matches := true
 
 	sortedActualResult := make(sortedResult, len(actualResult))

@@ -5,6 +5,11 @@ import (
 	"graph_coloring/test_data"
 )
 
+func TestT(t *testing.T) {
+	graph := test_data.Gc_70_7_Graph()
+	TomitaAlgo{}.FindAllMaximalCliques(graph)
+}
+
 func BenchmarkTomita_FindAllMaximalCliques(b *testing.B) {
 	benchmarkFindAllMaximalCliques(b, TomitaAlgo{})
 }

@@ -2,11 +2,11 @@ package cliques
 
 import (
 	"testing"
-	"graph_coloring/test_data"
+	"graph_coloring/testdata"
 )
 
 func TestT(t *testing.T) {
-	graph := test_data.Gc_70_7_Graph()
+	graph := testdata.Gc_70_7_Graph()
 	TomitaAlgo{}.FindAllMaximalCliques(graph)
 }
 
@@ -19,7 +19,7 @@ func BenchmarkFindAllMaximalCliques(b *testing.B) {
 }
 
 func benchmarkFindAllMaximalCliques(b *testing.B, algo MaximalCliqueFinder) {
-	graph := test_data.Gc_70_7_Graph()
+	graph := testdata.Gc_70_7_Graph()
 	b.ResetTimer()
 	b.ReportAllocs()
 

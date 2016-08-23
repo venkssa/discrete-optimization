@@ -1,12 +1,12 @@
 package graph_coloring
 
 import (
-	"graph_coloring/test_data"
+	"graph_coloring/testdata"
 	"testing"
 )
 
 func TestColorGraph(t *testing.T) {
-	graph := test_data.Gc_50_3_Graph()
+	graph := testdata.Gc_50_3_Graph()
 	maxColor := color(6)
 	result := ColorGraph(graph, maxColor)
 

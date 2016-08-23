@@ -3,12 +3,12 @@ package cliques
 import (
 	"sort"
 	"testing"
-	"graph_coloring/test_data"
+	"graph_coloring/testdata"
 	"reflect"
 )
 
 func TestNumberOfNeighbors(t *testing.T) {
-	graph := test_data.MustMakeGraph(`4 5
+	graph := testdata.MustMakeGraph(`4 5
 	0 1
 	0 2
 	0 3

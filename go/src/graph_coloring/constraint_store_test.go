@@ -2,7 +2,7 @@ package graph_coloring
 
 import (
 	"graph_coloring/graph"
-	"graph_coloring/test_data"
+	"graph_coloring/testdata"
 	"testing"
 )
 
@@ -16,12 +16,12 @@ func TestNotEqual_IsFeasible(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		graph := test_data.Gc_4_1_Graph()
+		g := testdata.Gc_4_1_Graph()
 		domainStore := &DomainStore{test.vertexColors, 0}
 
 		constraint := NotEqual{uint32(1)}
 
-		if constraint.IsFeasible(graph, domainStore) != true {
+		if constraint.IsFeasible(g, domainStore) != true {
 			t.Errorf("Expected All different Constraint %v to be feasible on domain %v",
 				constraint, domainStore)
 		}
@@ -29,13 +29,13 @@ func TestNotEqual_IsFeasible(t *testing.T) {
 }
 
 func TestNotEqual_IsNotFeasible(t *testing.T) {
-	graph := test_data.Gc_4_1_Graph()
+	g := testdata.Gc_4_1_Graph()
 
 	domainStore := &DomainStore{[]color{1, 1, 1, 1}, 0}
 
 	constraint := NotEqual{uint32(1)}
 
-	if constraint.IsFeasible(graph, domainStore) != false {
+	if constraint.IsFeasible(g, domainStore) != false {
 		t.Errorf("Expected constraint %v to be in-feasible on the domain %v", constraint, domainStore)
 	}
 }
@@ -56,12 +56,12 @@ func TestNotEqual_Prune(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		graph := test_data.Gc_4_1_Graph()
+		g := testdata.Gc_4_1_Graph()
 		domainStore := &DomainStore{test.vertexColors, 0}
 
 		constraint := NotEqual{uint32(1)}
 
-		if constraint.Prune(graph, domainStore) != true {
+		if constraint.Prune(g, domainStore) != true {
 			t.Errorf("Expected constraint %v to prune on the domain %v", constraint, domainStore)
 		}
 
@@ -77,31 +77,31 @@ func TestNotEqual_Prune(t *testing.T) {
 }
 
 func TestNotEqual_NothingToPrune(t *testing.T) {
-	graph := test_data.Gc_4_1_Graph()
+	g := testdata.Gc_4_1_Graph()
 	domainStore := &DomainStore{[]color{UNSET, UNSET, 1, 1}, 0}
 	constraint := NotEqual{uint32(1)}
 
-	if constraint.Prune(graph, domainStore) != false {
+	if constraint.Prune(g, domainStore) != false {
 		t.Errorf("Expected constraint %v not to prune on the domain %v", constraint, domainStore)
 	}
 }
 
 func BenchmarkNotEqual_IsFeasible_UnsetVertex(b *testing.B) {
 	benchmarkIsFeasible(b,
-		test_data.Gc_4_1_Graph(),
+		testdata.Gc_4_1_Graph(),
 		&DomainStore{[]color{1, UNSET, 1, 1}, 0},
 		NotEqual{uint32(1)})
 }
 
 func BenchmarkNotEqual_IsFeasible_SetVertex(b *testing.B) {
 	benchmarkIsFeasible(b,
-		test_data.Gc_4_1_Graph(),
+		testdata.Gc_4_1_Graph(),
 		&DomainStore{[]color{1, 2, 1, 1}, 0},
 		NotEqual{uint32(1)})
 }
 
 func BenchmarkNotEqual_Prune(b *testing.B) {
-	graph := test_data.Gc_4_1_Graph()
+	g := testdata.Gc_4_1_Graph()
 	domainStore := &DomainStore{[]color{1, UNSET, 1, 1}, 0}
 	constraint := NotEqual{uint32(1)}
 
@@ -109,7 +109,7 @@ func BenchmarkNotEqual_Prune(b *testing.B) {
 	b.ReportAllocs()
 
 	for idx := 0; idx < b.N; idx++ {
-		constraint.Prune(graph, domainStore)
+		constraint.Prune(g, domainStore)
 	}
 }
 

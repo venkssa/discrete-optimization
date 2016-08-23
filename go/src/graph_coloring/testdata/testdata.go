@@ -1,4 +1,4 @@
-package test_data
+package testdata
 
 import (
 	"fmt"
@@ -70,21 +70,21 @@ func Gc_1000_5_Graph() *graph.G {
 }
 
 func mustMakeGraphFile(path string) *graph.G {
-	file, err := os.Open(fmt.Sprintf("%s/src/graph_coloring/test_data/%s", os.Getenv("GOPATH"), path))
+	file, err := os.Open(fmt.Sprintf("%s/src/graph_coloring/testdata/%s", os.Getenv("GOPATH"), path))
 	if err != nil {
 		panic(err)
 	}
-	graph, err := graph.NewGraph(file)
+	g, err := graph.NewGraph(file)
 	if err != nil {
 		panic(err)
 	}
-	return graph
+	return g
 }
 
 func MustMakeGraph(graphStr string) *graph.G {
-	graph, err := graph.NewGraph(ioutil.NopCloser(strings.NewReader(graphStr)))
+	g, err := graph.NewGraph(ioutil.NopCloser(strings.NewReader(graphStr)))
 	if err != nil {
 		panic(err)
 	}
-	return graph
+	return g
 }

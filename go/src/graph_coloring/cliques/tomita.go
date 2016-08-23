@@ -18,50 +18,92 @@ func (ta TomitaAlgo) FindAllMaximalCliques(graph *graph.G) *Cliques {
 
 	neighbors := neighborsBitSet(graph)
 
+	mcf := &maximalCliqueFinder{
+		neighbors:     neighbors,
+		candidates:    []*BitSet{candidates},
+		finishedSlice: []*BitSet{NewBitSet(graph.NumOfVertices)},
+		current:       1,
+	}
 	return tomitaMaximalClique(
 		make(Clique, 0, graph.NumOfVertices),
-		candidates,
-		NewBitSet(graph.NumOfVertices),
-		neighbors,
+		mcf,
 		newPivotFinder(neighbors),
 		&Cliques{Cliques: []Clique{}, NumOfVertices: graph.NumOfVertices})
 }
 
-func tomitaMaximalClique(
-	r Clique,
-	candidate *BitSet,
-	finished *BitSet,
-	allNeighbors []*BitSet,
-        pivotFinder *pivotFinder,
-	result *Cliques) *Cliques {
-
-	if candidate.IsZero() && finished.IsZero() {
+func tomitaMaximalClique(r Clique, mcf *maximalCliqueFinder, pivotFinder *pivotFinder, result *Cliques) *Cliques {
+	if mcf.resultFound() {
 		result.Add(r.Clone())
 		return result
 	}
 
+	candidate := mcf.currentCandidate()
+	finished := mcf.currentFinished()
 	pivot := pivotFinder.find(candidate, finished)
 
-	candidateMinusPivotNeighbor := candidate.Minus(allNeighbors[pivot])
-
-	candidateCopy := NewBitSet(result.NumOfVertices)
-	finishedCopy := NewBitSet(result.NumOfVertices)
+	candidateMinusPivotNeighbor := mcf.candidateMinusNeighborsOfPivot(pivot)
 
 	for v := uint32(0); v < candidateMinusPivotNeighbor.Len(); v++ {
 		if !candidateMinusPivotNeighbor.IsSet(v) {
 			continue
 		}
 
-		neighbors := allNeighbors[v]
-		Intersection(candidateCopy, neighbors, candidate)
-		Intersection(finishedCopy, neighbors, finished)
+		mcf.increment(v)
 
-		tomitaMaximalClique(append(r, v), candidateCopy, finishedCopy, allNeighbors, pivotFinder, result)
+		tomitaMaximalClique(append(r, v), mcf, pivotFinder, result)
 
 		candidate.UnSet(v)
 		finished.Set(v)
+		mcf.decrement()
 	}
 	return result
+}
+
+type maximalCliqueFinder struct {
+	neighbors []*BitSet
+
+	candidates               []*BitSet
+	finishedSlice            []*BitSet // rename
+	candidatesMinusNeighbors []*BitSet
+	current                  uint32
+}
+
+func (mcf *maximalCliqueFinder) resultFound() bool {
+	return mcf.candidates[mcf.current-1].IsZero() && mcf.finishedSlice[mcf.current-1].IsZero()
+}
+
+func (mcf *maximalCliqueFinder) candidateMinusNeighborsOfPivot(pivot uint32) *BitSet {
+	if mcf.current > uint32(len(mcf.candidatesMinusNeighbors)) {
+		mcf.candidatesMinusNeighbors = append(mcf.candidatesMinusNeighbors, NewBitSet(uint32(len(mcf.neighbors))))
+	}
+	Minus(mcf.candidatesMinusNeighbors[mcf.current-1], mcf.currentCandidate(), mcf.neighbors[pivot])
+	return mcf.candidatesMinusNeighbors[mcf.current-1]
+}
+
+func (mcf *maximalCliqueFinder) increment(vertexIdx uint32) {
+	if mcf.current+1 > uint32(len(mcf.candidates)) {
+		mcf.candidates = append(mcf.candidates, NewBitSet(uint32(len(mcf.neighbors))))
+		mcf.finishedSlice = append(mcf.finishedSlice, NewBitSet(uint32(len(mcf.neighbors))))
+	}
+
+	prevCandidate := mcf.currentCandidate()
+	prevFinished := mcf.currentFinished()
+
+	mcf.current++
+	Intersection(mcf.currentCandidate(), mcf.neighbors[vertexIdx], prevCandidate)
+	Intersection(mcf.currentFinished(), mcf.neighbors[vertexIdx], prevFinished)
+}
+
+func (mcf *maximalCliqueFinder) decrement() {
+	mcf.current--
+}
+
+func (mcf *maximalCliqueFinder) currentCandidate() *BitSet {
+	return mcf.candidates[mcf.current-1]
+}
+
+func (mcf *maximalCliqueFinder) currentFinished() *BitSet {
+	return mcf.finishedSlice[mcf.current-1]
 }
 
 type pivotFinder struct {
@@ -73,8 +115,8 @@ type pivotFinder struct {
 func newPivotFinder(neighbors []*BitSet) *pivotFinder {
 	return &pivotFinder{
 		neighbors: neighbors,
-		subg:  NewBitSet(uint32(len(neighbors))),
-		candidateMinusNeighbor:  NewBitSet(uint32(len(neighbors))),
+		subg:      NewBitSet(uint32(len(neighbors))),
+		candidateMinusNeighbor: NewBitSet(uint32(len(neighbors))),
 	}
 }
 

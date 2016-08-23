@@ -4,6 +4,24 @@ import (
 	"testing"
 )
 
+func TestBitCount(t *testing.T) {
+	tests := []uint32{1, 4, 10, 20, 50, 64}
+
+	for _, test := range tests {
+
+		bs := NewBitSet(64)
+		for idx := uint32(0); idx < test; idx++ {
+			bs.Set(idx)
+		}
+
+		res := bs.blocks[0].BitCount()
+
+		if res != test {
+			t.Errorf("Expected %d but ws %d", test, res)
+		}
+	}
+}
+
 func TestBitSet_Set(t *testing.T) {
 	idxsToSet := []uint32{0, 63}
 	bs := bitsetForTest(64, idxsToSet...)

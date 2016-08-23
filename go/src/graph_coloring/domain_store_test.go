@@ -22,7 +22,7 @@ func TestDomain_Set_AlreadySetColorReturnsAnError(t *testing.T) {
 	}
 
 	if err := d.Set(0, 2); err == nil {
-		t.Errorf("Expected an error but was nil")
+		t.Error("Expected an error but was nil")
 	}
 }
 
@@ -33,7 +33,7 @@ func TestCopy(t *testing.T) {
 	copiedDomain := MakeACopy(domain)
 
 	if len(copiedDomain.vertexColors) != len(domain.vertexColors) {
-		t.Errorf("Expected the copied domain to have the same lenght as domain")
+		t.Error("Expected the copied domain to have the same length as domain")
 	}
 
 	copiedDomain.Set(1, 1)
@@ -43,7 +43,7 @@ func TestCopy(t *testing.T) {
 
 func verifyVertexColor(t *testing.T, d *DomainStore, vertex uint32, expectedColor color) {
 	if d.IsSet(vertex) == (expectedColor == UNSET) {
-		t.Errorf("Expected IsSet to be true but was false")
+		t.Error("Expected IsSet to be true but was false")
 	}
 
 	if actualColor := d.Color(vertex); actualColor != expectedColor {

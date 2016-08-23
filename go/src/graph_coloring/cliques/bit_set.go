@@ -4,6 +4,17 @@ const bitsPerWord = 64
 
 type block uint64
 
+// I have no clue what this code does and how it computes number of bits set.
+func (blk block) BitCount() uint32 {
+	blk = blk - ((blk >> 1) & 0x5555555555555555)
+	blk = (blk & 0x3333333333333333) + ((blk >> 2) & 0x3333333333333333)
+	blk = (blk + (blk >> 4)) & 0x0f0f0f0f0f0f0f0f
+	blk = blk + (blk >> 8)
+	blk = blk + (blk >> 16)
+	blk = blk + (blk >> 32)
+	return uint32(blk) & 0x7f
+}
+
 type BitSet struct {
 	blocks        []block
 	numOfElements uint32
@@ -23,10 +34,8 @@ func (bs *BitSet) Len() uint32 {
 
 func (bs *BitSet) NumOfBitsSet() uint32 {
 	var count uint32
-	for jdx := uint32(0); jdx < bs.Len(); jdx++ {
-		if bs.IsSet(jdx) {
-			count++
-		}
+	for _, blk := range bs.blocks {
+		count += blk.BitCount()
 	}
 	return count
 }

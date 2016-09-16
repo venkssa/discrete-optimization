@@ -69,6 +69,52 @@ func Gc_1000_5_Graph() *graph.G {
 	return mustMakeGraphFile("gc_1000_5")
 }
 
+type GraphName string
+
+const (
+	GC_1000_1 = GraphName("gc_1000_1")
+	GC_1000_3 = GraphName("gc_1000_3")
+	GC_1000_5 = GraphName("gc_1000_5")
+	GC_1000_7 = GraphName("gc_1000_7")
+	GC_1000_9 = GraphName("gc_1000_9")
+	GC_100_1  = GraphName("gc_100_1")
+	GC_100_3  = GraphName("gc_100_3")
+	GC_100_5  = GraphName("gc_100_5")
+	GC_100_7  = GraphName("gc_100_7")
+	GC_100_9  = GraphName("gc_100_9")
+	GC_20_1   = GraphName("gc_20_1")
+	GC_20_3   = GraphName("gc_20_3")
+	GC_20_5   = GraphName("gc_20_5")
+	GC_20_7   = GraphName("gc_20_7")
+	GC_20_9   = GraphName("gc_20_9")
+	GC_250_1  = GraphName("gc_250_1")
+	GC_250_3  = GraphName("gc_250_3")
+	GC_250_5  = GraphName("gc_250_5")
+	GC_250_7  = GraphName("gc_250_7")
+	GC_250_9  = GraphName("gc_250_9")
+	GC_4_1    = GraphName("gc_4_1")
+	GC_500_1  = GraphName("gc_500_1")
+	GC_500_3  = GraphName("gc_500_3")
+	GC_500_5  = GraphName("gc_500_5")
+	GC_500_7  = GraphName("gc_500_7")
+	GC_500_9  = GraphName("gc_500_9")
+	GC_50_1   = GraphName("gc_50_1")
+	GC_50_3   = GraphName("gc_50_3")
+	GC_50_5   = GraphName("gc_50_5")
+	GC_50_7   = GraphName("gc_50_7")
+	GC_50_9   = GraphName("gc_50_9")
+	GC_5_0    = GraphName("gc_5_0")
+	GC_70_1   = GraphName("gc_70_1")
+	GC_70_3   = GraphName("gc_70_3")
+	GC_70_5   = GraphName("gc_70_5")
+	GC_70_7   = GraphName("gc_70_7")
+	GC_70_9   = GraphName("gc_70_9")
+)
+
+func Graph(graphName GraphName) *graph.G {
+	return mustMakeGraphFile(string(graphName))
+}
+
 func mustMakeGraphFile(path string) *graph.G {
 	file, err := os.Open(fmt.Sprintf("%s/src/graph_coloring/testdata/%s", os.Getenv("GOPATH"), path))
 	if err != nil {

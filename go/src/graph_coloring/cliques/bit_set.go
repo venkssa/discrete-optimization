@@ -91,6 +91,12 @@ func (bs *BitSet) Intersection(second *BitSet) *BitSet {
 	return result
 }
 
+func (bs *BitSet) Not() *BitSet {
+	result := NewBitSet(bs.Len())
+	Not(result, bs)
+	return result
+}
+
 func Intersection(result *BitSet, first *BitSet, second *BitSet) {
 	for idx := 0; idx < len(result.blocks); idx++ {
 		result.blocks[idx] = first.blocks[idx] & second.blocks[idx]
@@ -106,5 +112,11 @@ func Minus(result *BitSet, first *BitSet, second *BitSet) {
 func Union(result *BitSet, first *BitSet, second *BitSet) {
 	for idx := 0; idx < len(result.blocks); idx++ {
 		result.blocks[idx] = first.blocks[idx] | second.blocks[idx]
+	}
+}
+
+func Not(result *BitSet, first *BitSet) {
+	for idx := 0; idx < len(result.blocks); idx++ {
+		result.blocks[idx] = ^first.blocks[idx]
 	}
 }

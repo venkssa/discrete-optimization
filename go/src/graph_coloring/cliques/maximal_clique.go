@@ -15,8 +15,8 @@ type Cliques struct {
 	NumOfVertices uint32
 }
 
-func (cls *Cliques) Add(c Clique) {
-	cls.Cliques = append(cls.Cliques, c)
+func (cls *Cliques) Add(c ...Clique) {
+	cls.Cliques = append(cls.Cliques, c...)
 }
 
 type MaximalCliqueFinder interface {

@@ -7,7 +7,7 @@ import (
 	"graph_coloring/graph"
 )
 
-func TestCompare_BK_Tomita_FindAllMaximalCliques(t *testing.T) {
+func TestCompareRunTimesFor_DifferentFindAllMaximalCliques(t *testing.T) {
 	graphNames := []testdata.GraphName{
 		testdata.GC_70_1,
 		testdata.GC_70_3,
@@ -29,12 +29,15 @@ func TestCompare_BK_Tomita_FindAllMaximalCliques(t *testing.T) {
 	tomitaCliqueFinder := TomitaAlgo{}
 	bkCliqueFinder := BronKerbosch()
 	parallelBkCliqueFinder := ParallelBKAlgo{}
+	parallelTomitaCliqueFinder := ParallelTomita()
 
 	for _, graphName := range graphNames {
 		g := testdata.Graph(graphName)
+		t.Run(fmt.Sprint("ParallelTomita_", graphName),
+			testFindAllMaximalCliques(g, parallelTomitaCliqueFinder))
+		t.Run(fmt.Sprint("ParallelBK_", graphName), testFindAllMaximalCliques(g, parallelBkCliqueFinder))
 		t.Run(fmt.Sprint("Tomita_", graphName), testFindAllMaximalCliques(g, tomitaCliqueFinder))
 		t.Run(fmt.Sprint("BK_", graphName), testFindAllMaximalCliques(g, bkCliqueFinder))
-		t.Run(fmt.Sprint("ParallelBK_", graphName), testFindAllMaximalCliques(g, parallelBkCliqueFinder))
 	}
 }
 

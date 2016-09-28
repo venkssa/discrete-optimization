@@ -97,7 +97,6 @@ func (pf *pivotFinder) find(candidate *BitSet, finished *BitSet) uint32 {
 			maxCount = count
 			maxVertexIdx = idx
 		}
-
 	}
 
 	return maxVertexIdx

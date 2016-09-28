@@ -38,7 +38,6 @@ func TestCompare_BK_Tomita_FindAllMaximalCliques(t *testing.T) {
 
 func testFindAllMaximalCliques(g *graph.G, algo MaximalCliqueFinder) func(*testing.T) {
 	return func(t *testing.T) {
-		t.Parallel()
 		c := algo.FindAllMaximalCliques(g)
 		t.Logf("Number of cliques %d", len(c.Cliques))
 	}

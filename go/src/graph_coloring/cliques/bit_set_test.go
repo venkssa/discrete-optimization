@@ -157,6 +157,14 @@ func TestBitSet_Union(t *testing.T) {
 	}
 }
 
+func TestBitSet_Not(t *testing.T) {
+	first := bitsetForTest(3, 0, 2)
+
+	if first.Not().String() != "010" {
+		t.Errorf("Expected !%v to be %v but was %v.", first, "010", first.Not())
+	}
+}
+
 func bitsetForTest(numOfElements uint32, idxsToSet ...uint32) *BitSet {
 	bs := NewBitSet(numOfElements)
 

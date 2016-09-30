@@ -28,7 +28,7 @@ func TestCompareRunTimesFor_DifferentFindAllMaximalCliques(t *testing.T) {
 
 	tomitaCliqueFinder := TomitaAlgo{}
 	bkCliqueFinder := BronKerbosch()
-	parallelBkCliqueFinder := ParallelBKAlgo{}
+	parallelBkCliqueFinder := ParallelBKAlgo()
 	parallelTomitaCliqueFinder := ParallelTomita()
 
 	for _, graphName := range graphNames {

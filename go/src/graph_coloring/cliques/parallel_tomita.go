@@ -3,7 +3,6 @@ package cliques
 import (
 	"graph_coloring/graph"
 	"runtime"
-	"sync"
 )
 
 type parallelTomita struct{}
@@ -13,88 +12,52 @@ func ParallelTomita() MaximalCliqueFinder {
 }
 
 func (ta parallelTomita) FindAllMaximalCliques(g *graph.G) *Cliques {
-	n := neighborsBitSet(g)
-	q := queueTomitaRootCandidates(n)
-	workers := newTomitaWorkers(n, q, uint32(runtime.NumCPU()))
-
-	cliques := Cliques{Cliques: []Clique{}, NumOfVertices: g.NumOfVertices}
-
-	for cliquesForSubTree := range workers.ResultChan {
-		cliques.Add(cliquesForSubTree.Cliques...)
-	}
-	return &cliques
-}
-
-func queueTomitaRootCandidates(allNeighbors []*BitSet) *WorkQueue {
-	finder := newPivotFinder(allNeighbors)
-	candidate := NewBitSet(uint32(len(allNeighbors)))
-	for idx := uint32(0); idx < uint32(len(allNeighbors)); idx++ {
+	neighborsBitSet := neighborsBitSet(g)
+	candidate := NewBitSet(g.NumOfVertices)
+	for idx := uint32(0); idx < g.NumOfVertices; idx++ {
 		candidate.Set(idx)
 	}
-
-	// TODO: This is fairly similar to the actual recursive tomita algorithm. Refactor to remove this.
 	finished := candidate.Not()
+	finder := newPivotFinder(neighborsBitSet)
 	pivot := finder.find(candidate, finished)
-	candidateMinusPivotNeighbor := candidate.Minus(allNeighbors[pivot])
+	candidateMinusPivotNeighbor := candidate.Minus(neighborsBitSet[pivot])
 
-	q := NewWorkQueue()
+	wrks := []Worker{}
 
-	for v := uint32(0); v < candidateMinusPivotNeighbor.Len(); v++ {
-		if !candidateMinusPivotNeighbor.IsSet(v) {
+	for vIdx := uint32(0); vIdx < candidateMinusPivotNeighbor.Len(); vIdx++ {
+		if !candidateMinusPivotNeighbor.IsSet(vIdx) {
 			continue
 		}
-		neighbor := allNeighbors[v]
-		q.AddToQueue(Work {
-			VIdx: v,
-			Candidate: neighbor.Intersection(candidate),
-			Finished: neighbor.Intersection(finished),
+		neighbor := neighborsBitSet[vIdx]
+		wrks = append(wrks, &tomitaWorker{
+			vIdx:            vIdx,
+			neighborsBitSet: neighborsBitSet,
+			candidate:       neighbor.Intersection(candidate),
+			finished:        neighbor.Intersection(finished),
 		})
-		candidate.UnSet(v)
-		finished.Set(v)
+
+		candidate.UnSet(vIdx)
+		finished.Set(vIdx)
 	}
 
-	return q
+	return execute(wrks, runtime.NumCPU())
 }
 
-// TODO This is similar to BK worker in parallel BK. Refactor to remove this.
-type tomitaWorkers struct {
-	ResultChan <-chan *Cliques
-	q          *WorkQueue
+type tomitaWorker struct {
+	vIdx            uint32
+	neighborsBitSet []*BitSet
+	candidate       *BitSet
+	finished        *BitSet
 }
 
-func newTomitaWorkers(vertexToEdgeBitSet []*BitSet, q *WorkQueue, numOfWorkers uint32) *workers {
-	resultChan := make(chan *Cliques)
-	w := workers{
-		ResultChan: resultChan,
-		q:          q,
-	}
+func (wrk *tomitaWorker) Work() *Cliques {
+	numOfVertices := uint32(len(wrk.neighborsBitSet))
 
-	wg := &sync.WaitGroup{}
-	wg.Add(int(numOfWorkers))
-
-	for idx := uint32(0); idx < numOfWorkers; idx++ {
-		go func() {
-			for {
-				wrk, err := q.GetWork()
-				if err != nil {
-					wg.Done()
-					return
-				}
-				result := tomitaMaximalClique(
-					append(make(Clique, 0, wrk.Candidate.Len()), wrk.VIdx),
-					wrk.Candidate,
-					wrk.Finished,
-					vertexToEdgeBitSet,
-					newPivotFinder(vertexToEdgeBitSet),
-					&Cliques{Cliques: []Clique{}, NumOfVertices: wrk.Candidate.Len()})
-				resultChan <- result
-			}
-		}()
-	}
-
-	go func() {
-		wg.Wait()
-		close(resultChan)
-	}()
-	return &w
+	return tomitaMaximalClique(
+		append(make(Clique, 0, numOfVertices), wrk.vIdx),
+		wrk.candidate,
+		wrk.finished,
+		wrk.neighborsBitSet,
+		newPivotFinder(wrk.neighborsBitSet),
+		&Cliques{Cliques: []Clique{}, NumOfVertices: numOfVertices})
 }

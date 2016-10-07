@@ -8,9 +8,13 @@ import (
 // v in P \ N(u)
 // SUBG = P U X (P == CAND, X == FINI)
 // u in SUBG, where maximize | CAND ^ N(u) |
-type TomitaAlgo struct{}
+type tomitaAlgo struct{}
 
-func (ta TomitaAlgo) FindAllMaximalCliques(graph *graph.G) *Cliques {
+func TomitaAlgo() MaximalCliqueFinder {
+	return tomitaAlgo{}
+}
+
+func (ta tomitaAlgo) FindAllMaximalCliques(graph *graph.G) *Cliques {
 	candidates := NewBitSet(graph.NumOfVertices)
 	for idx := uint32(0); idx < graph.NumOfVertices; idx++ {
 		candidates.Set(idx)
@@ -43,7 +47,6 @@ func tomitaMaximalClique(
 	pivot := pivotFinder.find(candidate, finished)
 
 	candidateMinusPivotNeighbor := candidate.Minus(allNeighbors[pivot])
-
 	candidateCopy := NewBitSet(result.NumOfVertices)
 	finishedCopy := NewBitSet(result.NumOfVertices)
 
@@ -61,16 +64,16 @@ func tomitaMaximalClique(
 }
 
 type pivotFinder struct {
-	neighbors              []*BitSet
-	subg                   *BitSet
-	candidateMinusNeighbor *BitSet
+	neighbors                   []*BitSet
+	subg                        *BitSet
+	candidateIntersectNeighbors *BitSet
 }
 
 func newPivotFinder(neighbors []*BitSet) *pivotFinder {
 	return &pivotFinder{
 		neighbors: neighbors,
 		subg:      NewBitSet(uint32(len(neighbors))),
-		candidateMinusNeighbor: NewBitSet(uint32(len(neighbors))),
+		candidateIntersectNeighbors: NewBitSet(uint32(len(neighbors))),
 	}
 }
 
@@ -81,11 +84,9 @@ func (pf *pivotFinder) find(candidate *BitSet, finished *BitSet) uint32 {
 	var maxCount uint32
 
 	pf.subg.LoopOverSetIndices(func(vIdx uint32) {
-		Intersection(pf.candidateMinusNeighbor, candidate, pf.neighbors[vIdx])
-
-		count := candidate.NumOfBitsSet()
-
-		if maxCount < count {
+		Intersection(pf.candidateIntersectNeighbors, candidate, pf.neighbors[vIdx])
+		count := pf.candidateIntersectNeighbors.NumOfBitsSet()
+		if maxCount <= count {
 			maxCount = count
 			maxVertexIdx = vIdx
 		}

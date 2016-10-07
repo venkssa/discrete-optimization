@@ -33,7 +33,7 @@ func TestCompareRunTimesFor_DifferentFindAllMaximalCliques(t *testing.T) {
 		//testdata.GC_1000_3, // Too slow and too much memory
 	}
 
-	tomitaCliqueFinder := TomitaAlgo{}
+	tomitaCliqueFinder := TomitaAlgo()
 	bkCliqueFinder := BronKerbosch()
 	parallelBkCliqueFinder := ParallelBKAlgo()
 	parallelTomitaCliqueFinder := ParallelTomita()
@@ -56,7 +56,7 @@ func testFindAllMaximalCliques(g *graph.G, algo MaximalCliqueFinder) func(*testi
 }
 
 func BenchmarkTomita_FindAllMaximalCliques(b *testing.B) {
-	benchmarkFindAllMaximalCliques(b, TomitaAlgo{})
+	benchmarkFindAllMaximalCliques(b, TomitaAlgo())
 }
 
 func BenchmarkFindAllMaximalCliques(b *testing.B) {

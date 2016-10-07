@@ -35,7 +35,9 @@ func (bs *BitSet) Len() uint32 {
 func (bs *BitSet) NumOfBitsSet() uint32 {
 	var count uint32
 	for _, blk := range bs.blocks {
-		count += blk.BitCount()
+		if blk != 0 {
+			count += blk.BitCount()
+		}
 	}
 	return count
 }
@@ -59,18 +61,6 @@ func (bs *BitSet) IsZero() bool {
 		}
 	}
 	return true
-}
-
-func (bs *BitSet) BlockString() string {
-	bitSetAsRune := make([]rune, len(bs.blocks)*bitsPerWord)
-	for idx := uint32(0); idx < uint32(len(bs.blocks)*bitsPerWord); idx++ {
-		if bs.IsSet(idx) {
-			bitSetAsRune[idx] = '1'
-		} else {
-			bitSetAsRune[idx] = '0'
-		}
-	}
-	return string(bitSetAsRune)
 }
 
 func (bs *BitSet) String() string {
@@ -118,7 +108,7 @@ func (bs *BitSet) LoopOverSetIndices(fn func(setIdx uint32)) {
 			}
 
 			for idx := uint32(0); idx < lastIdxInBlock; idx++ {
-				if (block & (1 << idx)) == 0{
+				if (block & (1 << idx)) == 0 {
 					continue
 				}
 

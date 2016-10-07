@@ -24,6 +24,13 @@ func TestCompareRunTimesFor_DifferentFindAllMaximalCliques(t *testing.T) {
 		testdata.GC_250_5,
 		//testdata.GC_250_7, // Too slow and too much memory
 		//testdata.GC_250_9, // Did not even try to run
+		testdata.GC_500_1,
+		testdata.GC_500_3,
+		//testdata.GC_500_5, // Too slow and too much memory
+		//testdata.GC_500_7, // Did not even try to run
+		//testdata.GC_500_9, // Did not even try to run
+		testdata.GC_1000_1,
+		//testdata.GC_1000_3, // Too slow and too much memory
 	}
 
 	tomitaCliqueFinder := TomitaAlgo{}

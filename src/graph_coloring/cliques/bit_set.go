@@ -61,6 +61,18 @@ func (bs *BitSet) IsZero() bool {
 	return true
 }
 
+func (bs *BitSet) BlockString() string {
+	bitSetAsRune := make([]rune, len(bs.blocks)*bitsPerWord)
+	for idx := uint32(0); idx < uint32(len(bs.blocks)*bitsPerWord); idx++ {
+		if bs.IsSet(idx) {
+			bitSetAsRune[idx] = '1'
+		} else {
+			bitSetAsRune[idx] = '0'
+		}
+	}
+	return string(bitSetAsRune)
+}
+
 func (bs *BitSet) String() string {
 	bitSetAsRune := make([]rune, bs.numOfElements)
 	for idx := uint32(0); idx < bs.numOfElements; idx++ {
@@ -95,6 +107,26 @@ func (bs *BitSet) Not() *BitSet {
 	result := NewBitSet(bs.Len())
 	Not(result, bs)
 	return result
+}
+
+func (bs *BitSet) LoopOverSetIndices(fn func(setIdx uint32)) {
+	lastIdxInBlock := uint32(bitsPerWord)
+	for blockIdx, block := range bs.blocks {
+		if block != 0 {
+			if blockIdx == len(bs.blocks)-1 {
+				lastIdxInBlock = bs.numOfElements % bitsPerWord
+			}
+
+			for idx := uint32(0); idx < lastIdxInBlock; idx++ {
+				if (block & (1 << idx)) == 0{
+					continue
+				}
+
+				vIdx := idx + uint32(blockIdx*bitsPerWord)
+				fn(vIdx)
+			}
+		}
+	}
 }
 
 func Intersection(result *BitSet, first *BitSet, second *BitSet) {

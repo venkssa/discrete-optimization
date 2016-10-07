@@ -36,19 +36,15 @@ func bronKerboschMaximalClique(r Clique,
 	pCopy := NewBitSet(numOfVertices)
 	xCopy := NewBitSet(numOfVertices)
 
-	for v := uint32(0); v < numOfVertices; v++ {
-		if !p.IsSet(v) {
-			continue
-		}
-
-		neighbors := vertexToEdgeBitSet[v]
+	p.LoopOverSetIndices(func (vIdx uint32) {
+		neighbors := vertexToEdgeBitSet[vIdx]
 		Intersection(pCopy, neighbors, p)
 		Intersection(xCopy, neighbors, x)
 
-		bronKerboschMaximalClique(append(r, v), pCopy, xCopy, vertexToEdgeBitSet, result)
+		bronKerboschMaximalClique(append(r, vIdx), pCopy, xCopy, vertexToEdgeBitSet, result)
 
-		p.UnSet(v)
-		x.Set(v)
-	}
+		p.UnSet(vIdx)
+		x.Set(vIdx)
+	})
 	return result
 }

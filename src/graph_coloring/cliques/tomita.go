@@ -47,20 +47,16 @@ func tomitaMaximalClique(
 	candidateCopy := NewBitSet(result.NumOfVertices)
 	finishedCopy := NewBitSet(result.NumOfVertices)
 
-	for v := uint32(0); v < candidateMinusPivotNeighbor.Len(); v++ {
-		if !candidateMinusPivotNeighbor.IsSet(v) {
-			continue
-		}
-
-		neighbors := allNeighbors[v]
+	candidateMinusPivotNeighbor.LoopOverSetIndices(func(vIdx uint32) {
+		neighbors := allNeighbors[vIdx]
 		Intersection(candidateCopy, neighbors, candidate)
 		Intersection(finishedCopy, neighbors, finished)
 
-		tomitaMaximalClique(append(r, v), candidateCopy, finishedCopy, allNeighbors, pivotFinder, result)
+		tomitaMaximalClique(append(r, vIdx), candidateCopy, finishedCopy, allNeighbors, pivotFinder, result)
 
-		candidate.UnSet(v)
-		finished.Set(v)
-	}
+		candidate.UnSet(vIdx)
+		finished.Set(vIdx)
+	})
 	return result
 }
 
@@ -84,20 +80,16 @@ func (pf *pivotFinder) find(candidate *BitSet, finished *BitSet) uint32 {
 	var maxVertexIdx uint32
 	var maxCount uint32
 
-	for idx := uint32(0); idx < pf.subg.Len(); idx++ {
-		if !pf.subg.IsSet(idx) {
-			continue
-		}
-
-		Intersection(pf.candidateMinusNeighbor, candidate, pf.neighbors[idx])
+	pf.subg.LoopOverSetIndices(func(vIdx uint32) {
+		Intersection(pf.candidateMinusNeighbor, candidate, pf.neighbors[vIdx])
 
 		count := candidate.NumOfBitsSet()
 
 		if maxCount < count {
 			maxCount = count
-			maxVertexIdx = idx
+			maxVertexIdx = vIdx
 		}
-	}
+	})
 
 	return maxVertexIdx
 }

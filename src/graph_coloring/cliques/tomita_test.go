@@ -31,7 +31,7 @@ func TestTomitaAlgo_FindAllMaximalCliques(t *testing.T) {
 		},
 	}
 
-	tomita := TomitaAlgo{}
+	tomita := TomitaAlgo()
 
 	for _, test := range tests {
 		cliques := tomita.FindAllMaximalCliques(test.graph)
@@ -53,7 +53,7 @@ func TestFindPivot(t *testing.T) {
 		{
 			candidate:      stringToBitSet("0000"),
 			finished:       stringToBitSet("1111"),
-			expectedMaxIdx: uint32(0),
+			expectedMaxIdx: uint32(3),
 		},
 		{
 			candidate:      stringToBitSet("0010"),

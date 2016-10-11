@@ -4,6 +4,7 @@ import (
 	"testing"
 	"graph_coloring/testdata"
 	"graph_coloring/graph"
+	"fmt"
 )
 
 func TestParallelTomita_FindAllMaximalCliques(t *testing.T) {
@@ -21,6 +22,14 @@ func BenchmarkParallelTomita(b *testing.B) {
 			cliques := parallelTomitaCliqueFinder.FindAllMaximalCliques(testGraph)
 			b.Log(len(cliques.Cliques))
 		}
+	}
+}
+
+func TestParallelTomita(t *testing.T) {
+	parallelTomitaCliqueFinder := ParallelTomita()
+	for idx, testGraph := range testGraphs() {
+		t.Run(fmt.Sprintf("ParallelTomita_%v_%v", testGraph.NumOfVertices, idx),
+			testFindAllMaximalCliques(testGraph, parallelTomitaCliqueFinder))
 	}
 }
 

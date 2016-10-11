@@ -17,34 +17,37 @@ func (bk bronKerboschAlgo) FindAllMaximalCliques(graph *graph.G) *Cliques {
 	return bronKerboschMaximalClique(make(Clique, 0, graph.NumOfVertices),
 		p,
 		NewBitSet(graph.NumOfVertices),
+		newBitSetPool(graph.NumOfVertices),
 		neighborsBitSet(graph),
 		&Cliques{Cliques: []Clique{}, NumOfVertices: graph.NumOfVertices})
 }
 
 func bronKerboschMaximalClique(r Clique,
-	p *BitSet,
-	x *BitSet,
+	candidate *BitSet,
+	finished *BitSet,
+	pool *bitSetPool,
 	vertexToEdgeBitSet []*BitSet,
 	result *Cliques) *Cliques {
 
-	if p.IsZero() && x.IsZero() {
+	if candidate.IsZero() && finished.IsZero() {
 		result.Add(r.Clone())
 		return result
 	}
 
-	numOfVertices := uint32(len(vertexToEdgeBitSet))
-	pCopy := NewBitSet(numOfVertices)
-	xCopy := NewBitSet(numOfVertices)
+	candidateCopy := pool.Borrow()
+	defer pool.Return(candidateCopy)
+	finishedCopy := pool.Borrow()
+	defer pool.Return(finishedCopy)
 
-	p.LoopOverSetIndices(func (vIdx uint32) {
+	candidate.LoopOverSetIndices(func (vIdx uint32) {
 		neighbors := vertexToEdgeBitSet[vIdx]
-		Intersection(pCopy, neighbors, p)
-		Intersection(xCopy, neighbors, x)
+		Intersection(candidateCopy, neighbors, candidate)
+		Intersection(finishedCopy, neighbors, finished)
 
-		bronKerboschMaximalClique(append(r, vIdx), pCopy, xCopy, vertexToEdgeBitSet, result)
+		bronKerboschMaximalClique(append(r, vIdx), candidateCopy, finishedCopy, pool, vertexToEdgeBitSet, result)
 
-		p.UnSet(vIdx)
-		x.Set(vIdx)
+		candidate.UnSet(vIdx)
+		finished.Set(vIdx)
 	})
 	return result
 }

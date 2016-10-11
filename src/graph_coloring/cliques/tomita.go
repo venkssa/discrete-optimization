@@ -43,10 +43,13 @@ func tomitaMaximalClique(
 	}
 
 	candidateCopy := pool.Borrow()
+	defer pool.Return(candidateCopy)
 	finishedCopy := pool.Borrow()
+	defer pool.Return(finishedCopy)
 
 	pivot := pivotFinder.find(candidate, finished)
 	candidateMinusPivotNeighbor := pool.Borrow()
+	defer pool.Return(candidateMinusPivotNeighbor)
 	Minus(candidateMinusPivotNeighbor, candidate, pivotFinder.neighbors[pivot])
 
 	candidateMinusPivotNeighbor.LoopOverSetIndices(func(vIdx uint32) {
@@ -58,9 +61,6 @@ func tomitaMaximalClique(
 		candidate.UnSet(vIdx)
 		finished.Set(vIdx)
 	})
-	pool.Return(candidateMinusPivotNeighbor)
-	pool.Return(candidateCopy)
-	pool.Return(finishedCopy)
 
 	return result
 }

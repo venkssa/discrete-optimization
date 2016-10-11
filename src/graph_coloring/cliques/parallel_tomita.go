@@ -24,10 +24,7 @@ func (ta parallelTomita) FindAllMaximalCliques(g *graph.G) *Cliques {
 
 	wrks := []Worker{}
 
-	for vIdx := uint32(0); vIdx < candidateMinusPivotNeighbor.Len(); vIdx++ {
-		if !candidateMinusPivotNeighbor.IsSet(vIdx) {
-			continue
-		}
+	candidateMinusPivotNeighbor.LoopOverSetIndices(func (vIdx uint32) {
 		neighbor := neighborsBitSet[vIdx]
 		wrks = append(wrks, &tomitaWorker{
 			vIdx:            vIdx,
@@ -38,7 +35,7 @@ func (ta parallelTomita) FindAllMaximalCliques(g *graph.G) *Cliques {
 
 		candidate.UnSet(vIdx)
 		finished.Set(vIdx)
-	}
+	})
 
 	return execute(wrks, runtime.NumCPU())
 }
@@ -57,7 +54,7 @@ func (wrk *tomitaWorker) Work() *Cliques {
 		append(make(Clique, 0, numOfVertices), wrk.vIdx),
 		wrk.candidate,
 		wrk.finished,
-		wrk.neighborsBitSet,
+		newBitSetPool(numOfVertices),
 		newPivotFinder(wrk.neighborsBitSet),
 		&Cliques{Cliques: []Clique{}, NumOfVertices: numOfVertices})
 }

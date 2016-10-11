@@ -4,7 +4,6 @@ const bitsPerWord = 64
 
 type block uint64
 
-// I have no clue what this code does and how it computes number of bits set.
 func (blk block) BitCount() uint32 {
 	blk = blk - ((blk >> 1) & 0x5555555555555555)
 	blk = (blk & 0x3333333333333333) + ((blk >> 2) & 0x3333333333333333)

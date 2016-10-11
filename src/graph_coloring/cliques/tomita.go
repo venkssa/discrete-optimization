@@ -20,14 +20,12 @@ func (ta tomitaAlgo) FindAllMaximalCliques(graph *graph.G) *Cliques {
 		candidates.Set(idx)
 	}
 
-	neighbors := neighborsBitSet(graph)
-
 	return tomitaMaximalClique(
 		make(Clique, 0, graph.NumOfVertices),
 		candidates,
 		NewBitSet(graph.NumOfVertices),
-		neighbors,
-		newPivotFinder(neighbors),
+		newBitSetPool(graph.NumOfVertices),
+		newPivotFinder(neighborsBitSet(graph)),
 		&Cliques{Cliques: []Clique{}, NumOfVertices: graph.NumOfVertices})
 }
 
@@ -35,7 +33,7 @@ func tomitaMaximalClique(
 	r Clique,
 	candidate *BitSet,
 	finished *BitSet,
-	allNeighbors []*BitSet,
+	pool *bitSetPool,
 	pivotFinder *pivotFinder,
 	result *Cliques) *Cliques {
 
@@ -44,23 +42,52 @@ func tomitaMaximalClique(
 		return result
 	}
 
-	pivot := pivotFinder.find(candidate, finished)
+	candidateCopy := pool.Borrow()
+	finishedCopy := pool.Borrow()
 
-	candidateMinusPivotNeighbor := candidate.Minus(allNeighbors[pivot])
-	candidateCopy := NewBitSet(result.NumOfVertices)
-	finishedCopy := NewBitSet(result.NumOfVertices)
+	pivot := pivotFinder.find(candidate, finished)
+	candidateMinusPivotNeighbor := pool.Borrow()
+	Minus(candidateMinusPivotNeighbor, candidate, pivotFinder.neighbors[pivot])
 
 	candidateMinusPivotNeighbor.LoopOverSetIndices(func(vIdx uint32) {
-		neighbors := allNeighbors[vIdx]
+		neighbors := pivotFinder.neighbors[vIdx]
 		Intersection(candidateCopy, neighbors, candidate)
 		Intersection(finishedCopy, neighbors, finished)
 
-		tomitaMaximalClique(append(r, vIdx), candidateCopy, finishedCopy, allNeighbors, pivotFinder, result)
+		tomitaMaximalClique(append(r, vIdx), candidateCopy, finishedCopy, pool, pivotFinder, result)
 
 		candidate.UnSet(vIdx)
 		finished.Set(vIdx)
 	})
+	pool.Return(candidateMinusPivotNeighbor)
+	pool.Return(candidateCopy)
+	pool.Return(finishedCopy)
+
 	return result
+}
+
+type bitSetPool struct {
+	bitSetSize uint32
+	available []*BitSet
+}
+
+func newBitSetPool(bitSetSize uint32) *bitSetPool {
+	return &bitSetPool{bitSetSize: bitSetSize}
+}
+
+func (p *bitSetPool) Borrow() *BitSet {
+	if len(p.available) == 0 {
+		return NewBitSet(p.bitSetSize)
+	}
+
+	lastIdx := len(p.available) - 1
+	bs := p.available[lastIdx]
+	p.available = p.available[0:lastIdx]
+	return bs
+}
+
+func (p *bitSetPool) Return(bs *BitSet) {
+	p.available = append(p.available, bs)
 }
 
 type pivotFinder struct {

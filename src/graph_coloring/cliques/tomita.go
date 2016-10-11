@@ -55,7 +55,6 @@ func tomitaMaximalClique(
 		Intersection(finishedCopy, neighbors, finished)
 
 		tomitaMaximalClique(append(r, vIdx), candidateCopy, finishedCopy, pool, pivotFinder, result)
-
 		candidate.UnSet(vIdx)
 		finished.Set(vIdx)
 	})

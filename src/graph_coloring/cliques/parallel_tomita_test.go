@@ -56,3 +56,21 @@ func testGraphs() []*graph.G {
 
 	return gs
 }
+
+func tt(count uint32, a *[]string) {
+	if count == 0 {
+		return
+	}
+	*a = append(*a, "hello")
+	tt(count - 1, a)
+}
+
+func TestParallelTomita(t *testing.T) {
+	a := []string{}
+	tt(2, &a)
+	t.Log(a)
+
+	t.Log(a[len(a) - 1])
+	t.Log(a[0:len(a) - 1])
+}
+

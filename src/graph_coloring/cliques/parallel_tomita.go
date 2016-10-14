@@ -50,11 +50,14 @@ type tomitaWorker struct {
 func (wrk *tomitaWorker) Work() *Cliques {
 	numOfVertices := uint32(len(wrk.neighborsBitSet))
 
-	return tomitaMaximalClique(
+	pool := NewBitSetPool(numOfVertices)
+	cliques := tomitaMaximalClique(
 		append(make(Clique, 0, numOfVertices), wrk.vIdx),
 		wrk.candidate,
 		wrk.finished,
-		newBitSetPool(numOfVertices),
+		pool,
 		newPivotFinder(wrk.neighborsBitSet),
 		&Cliques{Cliques: []Clique{}, NumOfVertices: numOfVertices})
+
+	return cliques
 }

@@ -17,15 +17,16 @@ func (bk bronKerboschAlgo) FindAllMaximalCliques(graph *graph.G) *Cliques {
 	return bronKerboschMaximalClique(make(Clique, 0, graph.NumOfVertices),
 		p,
 		NewBitSet(graph.NumOfVertices),
-		newBitSetPool(graph.NumOfVertices),
+		NewBitSetPool(graph.NumOfVertices),
 		neighborsBitSet(graph),
 		&Cliques{Cliques: []Clique{}, NumOfVertices: graph.NumOfVertices})
 }
 
-func bronKerboschMaximalClique(r Clique,
+func bronKerboschMaximalClique(
+	r Clique,
 	candidate *BitSet,
 	finished *BitSet,
-	pool *bitSetPool,
+	pool *BitSetPool,
 	vertexToEdgeBitSet []*BitSet,
 	result *Cliques) *Cliques {
 
@@ -35,9 +36,7 @@ func bronKerboschMaximalClique(r Clique,
 	}
 
 	candidateCopy := pool.Borrow()
-	defer pool.Return(candidateCopy)
 	finishedCopy := pool.Borrow()
-	defer pool.Return(finishedCopy)
 
 	candidate.LoopOverSetIndices(func (vIdx uint32) {
 		neighbors := vertexToEdgeBitSet[vIdx]
@@ -49,5 +48,7 @@ func bronKerboschMaximalClique(r Clique,
 		candidate.UnSet(vIdx)
 		finished.Set(vIdx)
 	})
+	pool.Return(candidateCopy)
+	pool.Return(finishedCopy)
 	return result
 }

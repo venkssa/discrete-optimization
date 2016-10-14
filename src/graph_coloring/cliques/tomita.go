@@ -24,7 +24,7 @@ func (ta tomitaAlgo) FindAllMaximalCliques(graph *graph.G) *Cliques {
 		make(Clique, 0, graph.NumOfVertices),
 		candidates,
 		NewBitSet(graph.NumOfVertices),
-		newBitSetPool(graph.NumOfVertices),
+		NewBitSetPool(graph.NumOfVertices),
 		newPivotFinder(neighborsBitSet(graph)),
 		&Cliques{Cliques: []Clique{}, NumOfVertices: graph.NumOfVertices})
 }
@@ -33,7 +33,7 @@ func tomitaMaximalClique(
 	r Clique,
 	candidate *BitSet,
 	finished *BitSet,
-	pool *bitSetPool,
+	pool *BitSetPool,
 	pivotFinder *pivotFinder,
 	result *Cliques) *Cliques {
 
@@ -43,13 +43,10 @@ func tomitaMaximalClique(
 	}
 
 	candidateCopy := pool.Borrow()
-	defer pool.Return(candidateCopy)
 	finishedCopy := pool.Borrow()
-	defer pool.Return(finishedCopy)
 
 	pivot := pivotFinder.find(candidate, finished)
 	candidateMinusPivotNeighbor := pool.Borrow()
-	defer pool.Return(candidateMinusPivotNeighbor)
 	Minus(candidateMinusPivotNeighbor, candidate, pivotFinder.neighbors[pivot])
 
 	candidateMinusPivotNeighbor.LoopOverSetIndices(func(vIdx uint32) {
@@ -62,31 +59,10 @@ func tomitaMaximalClique(
 		finished.Set(vIdx)
 	})
 
+	pool.Return(candidateCopy)
+	pool.Return(finishedCopy)
+	pool.Return(candidateMinusPivotNeighbor)
 	return result
-}
-
-type bitSetPool struct {
-	bitSetSize uint32
-	available []*BitSet
-}
-
-func newBitSetPool(bitSetSize uint32) *bitSetPool {
-	return &bitSetPool{bitSetSize: bitSetSize}
-}
-
-func (p *bitSetPool) Borrow() *BitSet {
-	if len(p.available) == 0 {
-		return NewBitSet(p.bitSetSize)
-	}
-
-	lastIdx := len(p.available) - 1
-	bs := p.available[lastIdx]
-	p.available = p.available[0:lastIdx]
-	return bs
-}
-
-func (p *bitSetPool) Return(bs *BitSet) {
-	p.available = append(p.available, bs)
 }
 
 type pivotFinder struct {

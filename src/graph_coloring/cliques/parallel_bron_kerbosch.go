@@ -41,7 +41,7 @@ func (wrk *bkWorker) Work() *Cliques {
 		append(make(Clique, 0, numOfVertices), wrk.vIdx),
 		candidate,
 		finished,
-		newBitSetPool(numOfVertices),
+		NewBitSetPool(numOfVertices),
 		wrk.neighborsBitSet,
 		&Cliques{Cliques: []Clique{}, NumOfVertices: numOfVertices})
 }

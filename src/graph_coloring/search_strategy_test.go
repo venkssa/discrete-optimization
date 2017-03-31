@@ -3,7 +3,8 @@ package graph_coloring
 import (
 	"reflect"
 	"testing"
-	"graph_coloring/cliques"
+
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/cliques"
 )
 
 func TestCliques_VertexCountPerCliqueLen(t *testing.T) {

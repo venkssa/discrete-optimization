@@ -1,8 +1,9 @@
 package cliques
 
 import (
-	"graph_coloring/graph"
 	"runtime"
+
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/graph"
 )
 
 type parallelTomita struct{}
@@ -24,7 +25,7 @@ func (ta parallelTomita) FindAllMaximalCliques(g *graph.G) *Cliques {
 
 	wrks := []Worker{}
 
-	candidateMinusPivotNeighbor.LoopOverSetIndices(func (vIdx uint32) {
+	candidateMinusPivotNeighbor.LoopOverSetIndices(func(vIdx uint32) {
 		neighbor := neighborsBitSet[vIdx]
 		wrks = append(wrks, &tomitaWorker{
 			vIdx:            vIdx,

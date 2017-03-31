@@ -2,10 +2,11 @@ package testdata
 
 import (
 	"fmt"
-	"graph_coloring/graph"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/graph"
 )
 
 func Gc_4_1_Graph() *graph.G {
@@ -116,7 +117,11 @@ func Graph(graphName GraphName) *graph.G {
 }
 
 func mustMakeGraphFile(path string) *graph.G {
-	file, err := os.Open(fmt.Sprintf("%s/src/graph_coloring/testdata/%s", os.Getenv("GOPATH"), path))
+	gopath, ok := os.LookupEnv("GOPATH")
+	if !ok {
+		gopath = os.Getenv("HOME") + "/go"
+	}
+	file, err := os.Open(fmt.Sprintf("%s/src/github.com/venkssa/discrete-optimization/src/graph_coloring/testdata/%s", gopath, path))
 	if err != nil {
 		panic(err)
 	}

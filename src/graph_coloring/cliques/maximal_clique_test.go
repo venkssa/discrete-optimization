@@ -1,10 +1,11 @@
 package cliques
 
 import (
+	"reflect"
 	"sort"
 	"testing"
-	"graph_coloring/testdata"
-	"reflect"
+
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/testdata"
 )
 
 func TestNumberOfNeighbors(t *testing.T) {

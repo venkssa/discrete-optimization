@@ -1,8 +1,8 @@
 package graph_coloring
 
 import (
-	"graph_coloring/cliques"
-	"graph_coloring/graph"
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/cliques"
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/graph"
 )
 
 type AllDifferentConstraint struct {

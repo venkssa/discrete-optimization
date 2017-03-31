@@ -1,6 +1,6 @@
 package cliques
 
-import "graph_coloring/graph"
+import "github.com/venkssa/discrete-optimization/src/graph_coloring/graph"
 
 type bronKerboschAlgo struct{}
 
@@ -38,7 +38,7 @@ func bronKerboschMaximalClique(
 	candidateCopy := pool.Borrow()
 	finishedCopy := pool.Borrow()
 
-	candidate.LoopOverSetIndices(func (vIdx uint32) {
+	candidate.LoopOverSetIndices(func(vIdx uint32) {
 		neighbors := vertexToEdgeBitSet[vIdx]
 		Intersection(candidateCopy, neighbors, candidate)
 		Intersection(finishedCopy, neighbors, finished)

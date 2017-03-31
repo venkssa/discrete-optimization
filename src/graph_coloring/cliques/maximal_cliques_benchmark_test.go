@@ -1,10 +1,11 @@
 package cliques
 
 import (
-	"testing"
-	"graph_coloring/testdata"
 	"fmt"
-	"graph_coloring/graph"
+	"testing"
+
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/graph"
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/testdata"
 )
 
 func TestCompareRunTimesFor_DifferentFindAllMaximalCliques(t *testing.T) {

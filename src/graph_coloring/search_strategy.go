@@ -3,13 +3,14 @@ package graph_coloring
 import (
 	"math"
 	"sort"
-	"graph_coloring/cliques"
+
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/cliques"
 )
 
 type Cliques struct {
 	cliques.Cliques
-	MinCliqueLen  uint32
-	MaxCliqueLen  uint32
+	MinCliqueLen uint32
+	MaxCliqueLen uint32
 
 	vertexFreqPerCliqueLen []map[uint32]uint32
 }
@@ -29,9 +30,9 @@ func NewCliques(cliques cliques.Cliques) *Cliques {
 	}
 
 	return &Cliques{
-		Cliques:       cliques,
-		MinCliqueLen:  minCliqueLen,
-		MaxCliqueLen:  maxCliqueLen,
+		Cliques:      cliques,
+		MinCliqueLen: minCliqueLen,
+		MaxCliqueLen: maxCliqueLen,
 
 		vertexFreqPerCliqueLen: computeOccurrencesForAllVertices(cliques.NumOfVertices, cliques),
 	}

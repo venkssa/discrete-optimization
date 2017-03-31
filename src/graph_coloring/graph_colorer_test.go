@@ -1,8 +1,9 @@
 package graph_coloring
 
 import (
-	"graph_coloring/testdata"
 	"testing"
+
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/testdata"
 )
 
 func TestColorGraph(t *testing.T) {

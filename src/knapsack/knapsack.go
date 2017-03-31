@@ -1,10 +1,11 @@
 package knapsack
 
 import (
-	"common"
 	"fmt"
 	"io"
 	"sort"
+
+	"github.com/venkssa/discrete-optimization/src/common"
 )
 
 type Item struct {

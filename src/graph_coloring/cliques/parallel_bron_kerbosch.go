@@ -1,8 +1,9 @@
 package cliques
 
 import (
-	"graph_coloring/graph"
 	"runtime"
+
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/graph"
 )
 
 type parallelBKAlgo struct{}

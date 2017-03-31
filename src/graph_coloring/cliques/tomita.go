@@ -1,8 +1,6 @@
 package cliques
 
-import (
-	"graph_coloring/graph"
-)
+import "github.com/venkssa/discrete-optimization/src/graph_coloring/graph"
 
 // Similar to BK except choose u P U X highest number of neigh in  P
 // v in P \ N(u)

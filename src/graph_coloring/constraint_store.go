@@ -1,6 +1,6 @@
 package graph_coloring
 
-import "graph_coloring/graph"
+import "github.com/venkssa/discrete-optimization/src/graph_coloring/graph"
 
 type Constraint interface {
 	IsFeasible(graph *graph.G, domainStore *DomainStore) bool

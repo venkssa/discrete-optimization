@@ -4,6 +4,4 @@ go:
  - 1.8
 
 script:
-  - export GOPATH=$HOME/gopath/src/github.com/venkssa/discrete-optimization
-  - cd $GOPATH
   - go test -v ./... -bench="^Benchmark*"

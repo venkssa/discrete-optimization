@@ -1,8 +1,6 @@
 package cliques
 
-import (
-	"graph_coloring/graph"
-)
+import "github.com/venkssa/discrete-optimization/src/graph_coloring/graph"
 
 type Clique []uint32
 

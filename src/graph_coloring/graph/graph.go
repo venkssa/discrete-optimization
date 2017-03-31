@@ -1,8 +1,9 @@
 package graph
 
 import (
-	"common"
 	"io"
+
+	"github.com/venkssa/discrete-optimization/src/common"
 )
 
 type G struct {

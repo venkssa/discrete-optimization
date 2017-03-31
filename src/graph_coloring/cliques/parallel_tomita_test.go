@@ -1,15 +1,16 @@
 package cliques
 
 import (
-	"testing"
-	"graph_coloring/testdata"
-	"graph_coloring/graph"
 	"fmt"
+	"testing"
+
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/graph"
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/testdata"
 )
 
 func TestParallelTomita_FindAllMaximalCliques(t *testing.T) {
 	g := testdata.Graph(testdata.GC_50_1)
-	expectedCliques :=  BronKerbosch().FindAllMaximalCliques(g).Cliques
+	expectedCliques := BronKerbosch().FindAllMaximalCliques(g).Cliques
 	parallelBKCliques := ParallelTomita().FindAllMaximalCliques(g).Cliques
 
 	verifyCliques(t, parallelBKCliques, expectedCliques)

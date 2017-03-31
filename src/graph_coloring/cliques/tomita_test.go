@@ -1,9 +1,10 @@
 package cliques
 
 import (
-	"graph_coloring/graph"
-	"graph_coloring/testdata"
 	"testing"
+
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/graph"
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/testdata"
 )
 
 func TestTomitaAlgo_FindAllMaximalCliques(t *testing.T) {

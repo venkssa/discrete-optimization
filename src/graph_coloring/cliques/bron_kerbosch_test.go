@@ -2,8 +2,9 @@ package cliques
 
 import (
 	"testing"
-	"graph_coloring/testdata"
-	"graph_coloring/graph"
+
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/graph"
+	"github.com/venkssa/discrete-optimization/src/graph_coloring/testdata"
 )
 
 func TestFindAllMaximalCliques(t *testing.T) {
